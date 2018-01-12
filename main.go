@@ -1,25 +1,35 @@
 package main
 
 import (
-	"log"
+	"fmt"
 	"os"
 
-	"github.com/minamijoyo/tfschema/command"
 	"github.com/mitchellh/cli"
 )
 
+func init() {
+	Ui = &cli.BasicUi{
+		Writer: os.Stdout,
+	}
+}
+
 func main() {
-	c := cli.NewCLI("tfschema", "0.0.1")
-	c.Args = os.Args[1:]
-	c.Commands = map[string]cli.CommandFactory{
-		"resource show": func() (cli.Command, error) {
-			return &command.ResourceShowCommand{}, nil
-		},
+	if Commands == nil {
+		initCommands()
+	}
+
+	args := os.Args[1:]
+
+	c := &cli.CLI{
+		Name:       "tfschema",
+		Args:       args,
+		Commands:   Commands,
+		HelpWriter: os.Stdout,
 	}
 
 	exitStatus, err := c.Run()
 	if err != nil {
-		log.Println(err)
+		Ui.Error(fmt.Sprintf("Failed to execute CLI: %s", err))
 	}
 
 	os.Exit(exitStatus)

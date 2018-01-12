@@ -11,14 +11,23 @@ import (
 	"github.com/hashicorp/terraform/terraform"
 )
 
-type ResourceShowCommand struct{}
+type ResourceShowCommand struct {
+	Meta
+}
 
 func (c *ResourceShowCommand) Run(args []string) int {
+	if len(args) != 1 {
+		c.Ui.Error("The resource show command expects RESOURCE_TYPE.")
+		c.Ui.Error(c.Help())
+		return 1
+	}
+
+	resourceType := args[0]
+
 	// find provider plugins
 	gopath := build.Default.GOPATH
 	pluginDirs := []string{gopath + "/bin"}
 	pluginMetaSet := discovery.FindPlugins("provider", pluginDirs)
-	spew.Dump(pluginMetaSet)
 
 	plugins := make(map[string]discovery.PluginMeta)
 	for plugin := range pluginMetaSet {
@@ -30,24 +39,27 @@ func (c *ResourceShowCommand) Run(args []string) int {
 	client := plugin.Client(plugins["aws"])
 	rpcClient, err := client.Client()
 	if err != nil {
-		panic(err)
+		c.Ui.Error(fmt.Sprintf("Failed to initialize plugin: %s", err))
+		return 1
 	}
 
 	raw, err := rpcClient.Dispense(plugin.ProviderPluginName)
 	if err != nil {
-		panic(err)
+		c.Ui.Error(fmt.Sprintf("Failed to dispense plugin: %s", err))
+		return 1
 	}
 	provider := raw.(terraform.ResourceProvider)
 
 	// invoke GetSchema
 	req := &terraform.ProviderSchemaRequest{
-		ResourceTypes: []string{"aws_security_group"},
+		ResourceTypes: []string{resourceType},
 		DataSources:   []string{},
 	}
 	res, err := provider.GetSchema(req)
 
 	if err != nil {
-		panic(fmt.Sprintf("%+v", err))
+		c.Ui.Error(fmt.Sprintf("Failed to get schema from provider: %s", err))
+		return 1
 	}
 
 	spew.Dump(res)
@@ -57,7 +69,7 @@ func (c *ResourceShowCommand) Run(args []string) int {
 
 func (c *ResourceShowCommand) Help() string {
 	helpText := `
-Usage: tfschema resource show [options] RESOURCE_TYPE
+Usage: tfschema resource show RESOURCE_TYPE
 `
 	return strings.TrimSpace(helpText)
 }
