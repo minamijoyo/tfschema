@@ -1,51 +1,26 @@
 package main
 
 import (
-	"fmt"
-	"go/build"
+	"log"
+	"os"
 
-	"github.com/davecgh/go-spew/spew"
-	"github.com/hashicorp/terraform/plugin"
-	"github.com/hashicorp/terraform/plugin/discovery"
-	"github.com/hashicorp/terraform/terraform"
+	"github.com/minamijoyo/tfschema/command"
+	"github.com/mitchellh/cli"
 )
 
 func main() {
-	// find provider plugins
-	gopath := build.Default.GOPATH
-	pluginDirs := []string{gopath + "/bin"}
-	pluginMetaSet := discovery.FindPlugins("provider", pluginDirs)
-	spew.Dump(pluginMetaSet)
-
-	plugins := make(map[string]discovery.PluginMeta)
-	for plugin := range pluginMetaSet {
-		name := plugin.Name
-		plugins[name] = plugin
+	c := cli.NewCLI("tfschema", "0.0.1")
+	c.Args = os.Args[1:]
+	c.Commands = map[string]cli.CommandFactory{
+		"resource show": func() (cli.Command, error) {
+			return &command.ResourceShowCommand{}, nil
+		},
 	}
 
-	// initialize aws plugin
-	client := plugin.Client(plugins["aws"])
-	rpcClient, err := client.Client()
+	exitStatus, err := c.Run()
 	if err != nil {
-		panic(err)
+		log.Println(err)
 	}
 
-	raw, err := rpcClient.Dispense(plugin.ProviderPluginName)
-	if err != nil {
-		panic(err)
-	}
-	provider := raw.(terraform.ResourceProvider)
-
-	// invoke GetSchema
-	req := &terraform.ProviderSchemaRequest{
-		ResourceTypes: []string{"aws_security_group"},
-		DataSources:   []string{},
-	}
-	res, err := provider.GetSchema(req)
-
-	if err != nil {
-		panic(fmt.Sprintf("%+v", err))
-	}
-
-	spew.Dump(res)
+	os.Exit(exitStatus)
 }
