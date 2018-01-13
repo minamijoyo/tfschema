@@ -62,7 +62,7 @@ func (c *ResourceShowCommand) Run(args []string) int {
 		return 1
 	}
 
-	spew.Dump(res)
+	spew.Dump(res.ResourceTypes)
 
 	return 0
 }
