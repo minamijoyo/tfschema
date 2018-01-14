@@ -1,14 +1,9 @@
 package command
 
 import (
-	"fmt"
-	"go/build"
 	"strings"
 
-	"github.com/davecgh/go-spew/spew"
-	"github.com/hashicorp/terraform/plugin"
-	"github.com/hashicorp/terraform/plugin/discovery"
-	"github.com/hashicorp/terraform/terraform"
+	"github.com/minamijoyo/tfschema/tfschema"
 )
 
 type ResourceShowCommand struct {
@@ -24,45 +19,17 @@ func (c *ResourceShowCommand) Run(args []string) int {
 
 	resourceType := args[0]
 
-	// find provider plugins
-	gopath := build.Default.GOPATH
-	pluginDirs := []string{gopath + "/bin"}
-	pluginMetaSet := discovery.FindPlugins("provider", pluginDirs)
-
-	plugins := make(map[string]discovery.PluginMeta)
-	for plugin := range pluginMetaSet {
-		name := plugin.Name
-		plugins[name] = plugin
-	}
-
-	// initialize aws plugin
-	client := plugin.Client(plugins["aws"])
-	rpcClient, err := client.Client()
+	client, err := tfschema.NewClient("aws")
 	if err != nil {
-		c.Ui.Error(fmt.Sprintf("Failed to initialize plugin: %s", err))
+		c.Ui.Error(err.Error())
 		return 1
 	}
 
-	raw, err := rpcClient.Dispense(plugin.ProviderPluginName)
+	err = client.GetSchema(resourceType)
 	if err != nil {
-		c.Ui.Error(fmt.Sprintf("Failed to dispense plugin: %s", err))
+		c.Ui.Error(err.Error())
 		return 1
 	}
-	provider := raw.(terraform.ResourceProvider)
-
-	// invoke GetSchema
-	req := &terraform.ProviderSchemaRequest{
-		ResourceTypes: []string{resourceType},
-		DataSources:   []string{},
-	}
-	res, err := provider.GetSchema(req)
-
-	if err != nil {
-		c.Ui.Error(fmt.Sprintf("Failed to get schema from provider: %s", err))
-		return 1
-	}
-
-	spew.Dump(res.ResourceTypes)
 
 	return 0
 }
