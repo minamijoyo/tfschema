@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"io/ioutil"
 	"log"
 	"os"
 
@@ -16,7 +17,7 @@ func init() {
 }
 
 func main() {
-	setLogFilter()
+	setLogFilter(os.Getenv("TFSCHEMA_LOG"))
 	log.Printf("[INFO] CLI args: %#v", os.Args)
 
 	if Commands == nil {
@@ -40,25 +41,19 @@ func main() {
 	os.Exit(exitStatus)
 }
 
-func getLogLevel() string {
-	defaultLevel := "WARN"
+func setLogFilter(minLevel string) {
+	levels := []logutils.LogLevel{"TRACE", "DEBUG", "INFO", "WARNING", "ERROR"}
 
-	envLevel := os.Getenv("TFSCHEMA_LOG")
-	if envLevel == "" {
-		return defaultLevel
+	// default log writer is null device.
+	writer := ioutil.Discard
+	if minLevel != "" {
+		writer = os.Stderr
 	}
-
-	return envLevel
-}
-
-func setLogFilter() {
-	levels := []logutils.LogLevel{"TRACE", "DEBUG", "INFO", "WARN", "ERROR"}
-	minLevel := getLogLevel()
 
 	filter := &logutils.LevelFilter{
 		Levels:   levels,
 		MinLevel: logutils.LogLevel(minLevel),
-		Writer:   os.Stderr,
+		Writer:   writer,
 	}
 
 	log.SetOutput(filter)
