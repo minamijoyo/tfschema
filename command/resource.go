@@ -1,6 +1,7 @@
 package command
 
 import (
+	"fmt"
 	"strings"
 
 	"github.com/minamijoyo/tfschema/tfschema"
@@ -18,8 +19,13 @@ func (c *ResourceShowCommand) Run(args []string) int {
 	}
 
 	resourceType := args[0]
+	providerName, err := detectProviderName(resourceType)
+	if err != nil {
+		c.Ui.Error(err.Error())
+		return 1
+	}
 
-	client, err := tfschema.NewClient("aws")
+	client, err := tfschema.NewClient(providerName)
 	if err != nil {
 		c.Ui.Error(err.Error())
 		return 1
@@ -32,6 +38,14 @@ func (c *ResourceShowCommand) Run(args []string) int {
 	}
 
 	return 0
+}
+
+func detectProviderName(resourceType string) (string, error) {
+	s := strings.SplitN(resourceType, "_", 2)
+	if len(s) < 2 {
+		return "", fmt.Errorf("Failed to detect a provider name from the resource type: %s", resourceType)
+	}
+	return s[0], nil
 }
 
 func (c *ResourceShowCommand) Help() string {
