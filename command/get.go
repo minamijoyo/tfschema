@@ -7,13 +7,13 @@ import (
 	"github.com/minamijoyo/tfschema/tfschema"
 )
 
-type ResourceShowCommand struct {
+type GetCommand struct {
 	Meta
 }
 
-func (c *ResourceShowCommand) Run(args []string) int {
+func (c *GetCommand) Run(args []string) int {
 	if len(args) != 1 {
-		c.Ui.Error("The resource show command expects RESOURCE_TYPE.")
+		c.Ui.Error("The get command expects RESOURCE_TYPE.")
 		c.Ui.Error(c.Help())
 		return 1
 	}
@@ -48,13 +48,13 @@ func detectProviderName(resourceType string) (string, error) {
 	return s[0], nil
 }
 
-func (c *ResourceShowCommand) Help() string {
+func (c *GetCommand) Help() string {
 	helpText := `
-Usage: tfschema resource show RESOURCE_TYPE
+Usage: tfschema get RESOURCE_TYPE
 `
 	return strings.TrimSpace(helpText)
 }
 
-func (c *ResourceShowCommand) Synopsis() string {
-	return "Show a resource type in the schema"
+func (c *GetCommand) Synopsis() string {
+	return "get schema for a resource type"
 }
