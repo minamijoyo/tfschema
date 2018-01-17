@@ -7,8 +7,11 @@ import (
 	"os"
 
 	"github.com/hashicorp/logutils"
+	"github.com/minamijoyo/tfschema/command"
 	"github.com/mitchellh/cli"
 )
+
+var Ui cli.Ui
 
 func init() {
 	Ui = &cli.BasicUi{
@@ -20,16 +23,14 @@ func main() {
 	setLogFilter(os.Getenv("TFSCHEMA_LOG"))
 	log.Printf("[INFO] CLI args: %#v", os.Args)
 
-	if Commands == nil {
-		initCommands()
-	}
+	commands := initCommands()
 
 	args := os.Args[1:]
 
 	c := &cli.CLI{
 		Name:       "tfschema",
 		Args:       args,
-		Commands:   Commands,
+		Commands:   commands,
 		HelpWriter: os.Stdout,
 	}
 
@@ -57,4 +58,20 @@ func setLogFilter(minLevel string) {
 	}
 
 	log.SetOutput(filter)
+}
+
+func initCommands() map[string]cli.CommandFactory {
+	meta := command.Meta{
+		Ui: Ui,
+	}
+
+	commands := map[string]cli.CommandFactory{
+		"resource show": func() (cli.Command, error) {
+			return &command.ResourceShowCommand{
+				Meta: meta,
+			}, nil
+		},
+	}
+
+	return commands
 }
