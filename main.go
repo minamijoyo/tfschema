@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"io"
 	"io/ioutil"
 	"log"
 	"os"
@@ -9,6 +10,7 @@ import (
 	"github.com/hashicorp/logutils"
 	"github.com/minamijoyo/tfschema/command"
 	"github.com/mitchellh/cli"
+	"github.com/mitchellh/panicwrap"
 )
 
 var Ui cli.Ui
@@ -20,7 +22,26 @@ func init() {
 }
 
 func main() {
-	setLogFilter(os.Getenv("TFSCHEMA_LOG"))
+	// abuse panicwrap to discard noisy debug log from go-plugin
+	wrapConfig := panicwrap.WrapConfig{
+		Handler: panicHandler,
+		Writer:  logOutput(),
+	}
+
+	exitStatus, err := panicwrap.Wrap(&wrapConfig)
+	if err != nil {
+		panic(err)
+	}
+
+	if exitStatus >= 0 {
+		os.Exit(exitStatus)
+	}
+
+	os.Exit(wrappedMain())
+}
+
+func wrappedMain() int {
+	log.SetOutput(logOutput())
 	log.Printf("[INFO] CLI args: %#v", os.Args)
 
 	commands := initCommands()
@@ -39,11 +60,17 @@ func main() {
 		Ui.Error(fmt.Sprintf("Failed to execute CLI: %s", err))
 	}
 
-	os.Exit(exitStatus)
+	return exitStatus
 }
 
-func setLogFilter(minLevel string) {
+func panicHandler(output string) {
+	Ui.Error(fmt.Sprintf("The child panicked:\n\n%s\n", output))
+	os.Exit(1)
+}
+
+func logOutput() io.Writer {
 	levels := []logutils.LogLevel{"TRACE", "DEBUG", "INFO", "WARN", "ERROR"}
+	minLevel := os.Getenv("TFSCHEMA_LOG")
 
 	// default log writer is null device.
 	writer := ioutil.Discard
@@ -57,7 +84,7 @@ func setLogFilter(minLevel string) {
 		Writer:   writer,
 	}
 
-	log.SetOutput(filter)
+	return filter
 }
 
 func initCommands() map[string]cli.CommandFactory {
