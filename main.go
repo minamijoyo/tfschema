@@ -43,7 +43,7 @@ func main() {
 }
 
 func setLogFilter(minLevel string) {
-	levels := []logutils.LogLevel{"TRACE", "DEBUG", "INFO", "WARNING", "ERROR"}
+	levels := []logutils.LogLevel{"TRACE", "DEBUG", "INFO", "WARN", "ERROR"}
 
 	// default log writer is null device.
 	writer := ioutil.Discard
