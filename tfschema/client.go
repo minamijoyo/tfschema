@@ -5,10 +5,10 @@ import (
 	"go/build"
 	"reflect"
 
-	"github.com/davecgh/go-spew/spew"
 	"github.com/hashicorp/terraform/plugin"
 	"github.com/hashicorp/terraform/plugin/discovery"
 	"github.com/hashicorp/terraform/terraform"
+	"github.com/k0kubun/pp"
 )
 
 type Client struct {
@@ -70,7 +70,7 @@ func (c *Client) GetSchema(resourceType string) error {
 		return fmt.Errorf("Faild to get schema from provider: %s", err)
 	}
 
-	spew.Dump(res.ResourceTypes)
+	pp.Println(res.ResourceTypes)
 
 	return nil
 }
