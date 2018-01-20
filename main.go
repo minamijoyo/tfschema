@@ -6,6 +6,8 @@ import (
 	"io/ioutil"
 	"log"
 	"os"
+	"sync"
+	"syscall"
 
 	"github.com/hashicorp/logutils"
 	"github.com/minamijoyo/tfschema/command"
@@ -23,18 +25,28 @@ func init() {
 
 func main() {
 	// abuse panicwrap to discard noisy debug log from go-plugin
-	wrapConfig := panicwrap.WrapConfig{
-		Handler: panicHandler,
-		Writer:  logOutput(),
-	}
+	var wrapConfig panicwrap.WrapConfig
+	if !panicwrap.Wrapped(&wrapConfig) {
+		doneCh := make(chan struct{})
+		outR, outW := io.Pipe()
+		go copyOutput(outR, doneCh)
 
-	exitStatus, err := panicwrap.Wrap(&wrapConfig)
-	if err != nil {
-		panic(err)
-	}
+		wrapConfig.Handler = panicHandler
+		wrapConfig.Writer = logOutput()
+		wrapConfig.Stdout = outW
+		wrapConfig.IgnoreSignals = []os.Signal{os.Interrupt}
+		wrapConfig.ForwardSignals = []os.Signal{syscall.SIGTERM}
 
-	if exitStatus >= 0 {
-		os.Exit(exitStatus)
+		exitStatus, err := panicwrap.Wrap(&wrapConfig)
+		if err != nil {
+			panic(err)
+		}
+
+		if exitStatus >= 0 {
+			outW.Close()
+			<-doneCh
+			os.Exit(exitStatus)
+		}
 	}
 
 	os.Exit(wrappedMain())
@@ -85,6 +97,19 @@ func logOutput() io.Writer {
 	}
 
 	return filter
+}
+
+func copyOutput(r io.Reader, doneCh chan<- struct{}) {
+	defer close(doneCh)
+
+	var wg sync.WaitGroup
+	wg.Add(1)
+	go func() {
+		defer wg.Done()
+		io.Copy(os.Stdout, r)
+	}()
+
+	wg.Wait()
 }
 
 func initCommands() map[string]cli.CommandFactory {
