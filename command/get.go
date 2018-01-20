@@ -31,6 +31,8 @@ func (c *GetCommand) Run(args []string) int {
 		return 1
 	}
 
+	defer client.Kill()
+
 	err = client.GetSchema(resourceType)
 	if err != nil {
 		c.Ui.Error(err.Error())

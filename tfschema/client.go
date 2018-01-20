@@ -3,6 +3,7 @@ package tfschema
 import (
 	"fmt"
 	"go/build"
+	"reflect"
 
 	"github.com/davecgh/go-spew/spew"
 	"github.com/hashicorp/terraform/plugin"
@@ -12,24 +13,18 @@ import (
 
 type Client struct {
 	provider terraform.ResourceProvider
+	// The type of pluginClient is
+	// *github.com/hashicorp/terraform/vendor/github.com/hashicorp/go-plugin.Client.
+	// But, we cannot import the vendor version of go-plugin using terraform.
+	// So, we store this as interface{}, and use it by reflection.
+	pluginClient interface{}
 }
 
 func NewClient(providerName string) (*Client, error) {
-	provider, err := newProvider(providerName)
-	if err != nil {
-		return nil, err
-	}
+	pluginMeta := findPlugin("provider", providerName)
 
-	return &Client{
-		provider: provider,
-	}, nil
-}
-
-func newProvider(name string) (terraform.ResourceProvider, error) {
-	pluginMeta := findPlugin("provider", name)
-
-	client := plugin.Client(pluginMeta)
-	rpcClient, err := client.Client()
+	pluginClient := plugin.Client(pluginMeta)
+	rpcClient, err := pluginClient.Client()
 	if err != nil {
 		return nil, fmt.Errorf("Failed to initialize plugin: %s", err)
 	}
@@ -40,7 +35,10 @@ func newProvider(name string) (terraform.ResourceProvider, error) {
 	}
 	provider := raw.(terraform.ResourceProvider)
 
-	return provider, nil
+	return &Client{
+		provider:     provider,
+		pluginClient: pluginClient,
+	}, nil
 }
 
 func findPlugin(pluginType string, pluginName string) discovery.PluginMeta {
@@ -75,4 +73,9 @@ func (c *Client) GetSchema(resourceType string) error {
 	spew.Dump(res.ResourceTypes)
 
 	return nil
+}
+
+func (c *Client) Kill() {
+	v := reflect.ValueOf(c.pluginClient).MethodByName("Kill")
+	v.Call([]reflect.Value{})
 }
