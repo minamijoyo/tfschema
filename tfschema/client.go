@@ -1,6 +1,7 @@
 package tfschema
 
 import (
+	"encoding/json"
 	"fmt"
 	"go/build"
 	"reflect"
@@ -8,7 +9,6 @@ import (
 	"github.com/hashicorp/terraform/plugin"
 	"github.com/hashicorp/terraform/plugin/discovery"
 	"github.com/hashicorp/terraform/terraform"
-	"github.com/k0kubun/pp"
 )
 
 type Client struct {
@@ -59,7 +59,7 @@ func pluginDirs() []string {
 	return pluginDirs
 }
 
-func (c *Client) GetSchema(resourceType string) error {
+func (c *Client) GetSchema(resourceType string) (string, error) {
 	req := &terraform.ProviderSchemaRequest{
 		ResourceTypes: []string{resourceType},
 		DataSources:   []string{},
@@ -67,12 +67,15 @@ func (c *Client) GetSchema(resourceType string) error {
 
 	res, err := c.provider.GetSchema(req)
 	if err != nil {
-		return fmt.Errorf("Faild to get schema from provider: %s", err)
+		return "", fmt.Errorf("Faild to get schema from provider: %s", err)
 	}
 
-	pp.Println(res.ResourceTypes)
+	bytes, err := json.MarshalIndent(res.ResourceTypes, "", "    ")
+	if err != nil {
+		return "", fmt.Errorf("Faild to marshal response: %s", err)
+	}
 
-	return nil
+	return string(bytes), nil
 }
 
 func (c *Client) List() []string {

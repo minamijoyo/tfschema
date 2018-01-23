@@ -33,11 +33,13 @@ func (c *ResourceTypeCommand) Run(args []string) int {
 
 	defer client.Kill()
 
-	err = client.GetSchema(resourceType)
+	output, err := client.GetSchema(resourceType)
 	if err != nil {
 		c.Ui.Error(err.Error())
 		return 1
 	}
+
+	c.Ui.Output(output)
 
 	return 0
 }
