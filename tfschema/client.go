@@ -75,6 +75,12 @@ func (c *Client) GetSchema(resourceType string) error {
 	return nil
 }
 
+func (c *Client) List() {
+	res := c.provider.Resources()
+
+	pp.Println(res)
+}
+
 func (c *Client) Kill() {
 	v := reflect.ValueOf(c.pluginClient).MethodByName("Kill")
 	v.Call([]reflect.Value{})

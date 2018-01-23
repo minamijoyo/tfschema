@@ -123,6 +123,11 @@ func initCommands() map[string]cli.CommandFactory {
 				Meta: meta,
 			}, nil
 		},
+		"resource list": func() (cli.Command, error) {
+			return &command.ResourceListCommand{
+				Meta: meta,
+			}, nil
+		},
 	}
 
 	return commands
