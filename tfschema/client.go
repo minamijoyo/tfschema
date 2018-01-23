@@ -75,10 +75,15 @@ func (c *Client) GetSchema(resourceType string) error {
 	return nil
 }
 
-func (c *Client) List() {
+func (c *Client) List() []string {
 	res := c.provider.Resources()
 
-	pp.Println(res)
+	resourceTypes := []string{}
+	for _, r := range res {
+		resourceTypes = append(resourceTypes, r.Name)
+	}
+
+	return resourceTypes
 }
 
 func (c *Client) Kill() {

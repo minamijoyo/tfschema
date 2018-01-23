@@ -27,7 +27,8 @@ func (c *ResourceListCommand) Run(args []string) int {
 
 	defer client.Kill()
 
-	client.List()
+	resourceTypes := client.List()
+	c.Ui.Output(strings.Join(resourceTypes, "\n"))
 
 	return 0
 }
