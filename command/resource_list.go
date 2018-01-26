@@ -12,7 +12,7 @@ type ResourceListCommand struct {
 
 func (c *ResourceListCommand) Run(args []string) int {
 	if len(args) != 1 {
-		c.Ui.Error("The resource type command expects PROVIDER")
+		c.Ui.Error("The resource list command expects PROVIDER")
 		c.Ui.Error(c.Help())
 		return 1
 	}
@@ -27,7 +27,7 @@ func (c *ResourceListCommand) Run(args []string) int {
 
 	defer client.Kill()
 
-	resourceTypes := client.List()
+	resourceTypes := client.Resources()
 	c.Ui.Output(strings.Join(resourceTypes, "\n"))
 
 	return 0

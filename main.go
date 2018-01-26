@@ -128,6 +128,11 @@ func initCommands() map[string]cli.CommandFactory {
 				Meta: meta,
 			}, nil
 		},
+		"data list": func() (cli.Command, error) {
+			return &command.DataListCommand{
+				Meta: meta,
+			}, nil
+		},
 	}
 
 	return commands

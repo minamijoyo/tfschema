@@ -78,7 +78,7 @@ func (c *Client) GetSchema(resourceType string) (string, error) {
 	return string(bytes), nil
 }
 
-func (c *Client) List() []string {
+func (c *Client) Resources() []string {
 	res := c.provider.Resources()
 
 	resourceTypes := []string{}
@@ -87,6 +87,17 @@ func (c *Client) List() []string {
 	}
 
 	return resourceTypes
+}
+
+func (c *Client) DataSources() []string {
+	res := c.provider.DataSources()
+
+	dataSources := []string{}
+	for _, r := range res {
+		dataSources = append(dataSources, r.Name)
+	}
+
+	return dataSources
 }
 
 func (c *Client) Kill() {
