@@ -6,19 +6,19 @@ import (
 	"github.com/minamijoyo/tfschema/tfschema"
 )
 
-type ResourceShowCommand struct {
+type DataShowCommand struct {
 	Meta
 }
 
-func (c *ResourceShowCommand) Run(args []string) int {
+func (c *DataShowCommand) Run(args []string) int {
 	if len(args) != 1 {
-		c.Ui.Error("The resource show command expects RESOURCE_TYPE")
+		c.Ui.Error("The data show command expects DATA_SOURCE")
 		c.Ui.Error(c.Help())
 		return 1
 	}
 
-	resourceType := args[0]
-	providerName, err := detectProviderName(resourceType)
+	dataSource := args[0]
+	providerName, err := detectProviderName(dataSource)
 	if err != nil {
 		c.Ui.Error(err.Error())
 		return 1
@@ -32,7 +32,7 @@ func (c *ResourceShowCommand) Run(args []string) int {
 
 	defer client.Kill()
 
-	output, err := client.GetResourceTypeSchema(resourceType)
+	output, err := client.GetDataSourceSchema(dataSource)
 	if err != nil {
 		c.Ui.Error(err.Error())
 		return 1
@@ -43,13 +43,13 @@ func (c *ResourceShowCommand) Run(args []string) int {
 	return 0
 }
 
-func (c *ResourceShowCommand) Help() string {
+func (c *DataShowCommand) Help() string {
 	helpText := `
-Usage: tfschema resource show RESOURCE_TYPE
+Usage: tfschema data show DATA_SOURCE
 `
 	return strings.TrimSpace(helpText)
 }
 
-func (c *ResourceShowCommand) Synopsis() string {
+func (c *DataShowCommand) Synopsis() string {
 	return "Show a type definition of schema"
 }

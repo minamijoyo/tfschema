@@ -118,18 +118,23 @@ func initCommands() map[string]cli.CommandFactory {
 	}
 
 	commands := map[string]cli.CommandFactory{
-		"resource show": func() (cli.Command, error) {
-			return &command.ResourceShowCommand{
-				Meta: meta,
-			}, nil
-		},
 		"resource list": func() (cli.Command, error) {
 			return &command.ResourceListCommand{
 				Meta: meta,
 			}, nil
 		},
+		"resource show": func() (cli.Command, error) {
+			return &command.ResourceShowCommand{
+				Meta: meta,
+			}, nil
+		},
 		"data list": func() (cli.Command, error) {
 			return &command.DataListCommand{
+				Meta: meta,
+			}, nil
+		},
+		"data show": func() (cli.Command, error) {
+			return &command.DataShowCommand{
 				Meta: meta,
 			}, nil
 		},
