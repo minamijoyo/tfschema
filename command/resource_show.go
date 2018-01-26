@@ -51,5 +51,5 @@ Usage: tfschema resource show RESOURCE_TYPE
 }
 
 func (c *ResourceShowCommand) Synopsis() string {
-	return "Show a type definition of schema"
+	return "Show a type definition of resource"
 }

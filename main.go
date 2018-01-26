@@ -118,6 +118,11 @@ func initCommands() map[string]cli.CommandFactory {
 	}
 
 	commands := map[string]cli.CommandFactory{
+		"provider show": func() (cli.Command, error) {
+			return &command.ProviderShowCommand{
+				Meta: meta,
+			}, nil
+		},
 		"resource list": func() (cli.Command, error) {
 			return &command.ResourceListCommand{
 				Meta: meta,

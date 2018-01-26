@@ -59,6 +59,25 @@ func pluginDirs() []string {
 	return pluginDirs
 }
 
+func (c *Client) GetProviderSchema() (string, error) {
+	req := &terraform.ProviderSchemaRequest{
+		ResourceTypes: []string{},
+		DataSources:   []string{},
+	}
+
+	res, err := c.provider.GetSchema(req)
+	if err != nil {
+		return "", fmt.Errorf("Faild to get schema from provider: %s", err)
+	}
+
+	bytes, err := json.MarshalIndent(res.Provider, "", "    ")
+	if err != nil {
+		return "", fmt.Errorf("Faild to marshal response: %s", err)
+	}
+
+	return string(bytes), nil
+}
+
 func (c *Client) GetResourceTypeSchema(resourceType string) (string, error) {
 	req := &terraform.ProviderSchemaRequest{
 		ResourceTypes: []string{resourceType},

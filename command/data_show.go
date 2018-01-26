@@ -51,5 +51,5 @@ Usage: tfschema data show DATA_SOURCE
 }
 
 func (c *DataShowCommand) Synopsis() string {
-	return "Show a type definition of schema"
+	return "Show a type definition of data source"
 }
