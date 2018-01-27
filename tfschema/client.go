@@ -21,9 +21,12 @@ type Client struct {
 }
 
 func NewClient(providerName string) (*Client, error) {
-	pluginMeta := findPlugin("provider", providerName)
+	pluginMeta, err := findPlugin("provider", providerName)
+	if err != nil {
+		return nil, err
+	}
 
-	pluginClient := plugin.Client(pluginMeta)
+	pluginClient := plugin.Client(*pluginMeta)
 	rpcClient, err := pluginClient.Client()
 	if err != nil {
 		return nil, fmt.Errorf("Failed to initialize plugin: %s", err)
@@ -41,16 +44,16 @@ func NewClient(providerName string) (*Client, error) {
 	}, nil
 }
 
-func findPlugin(pluginType string, pluginName string) discovery.PluginMeta {
+func findPlugin(pluginType string, pluginName string) (*discovery.PluginMeta, error) {
 	pluginMetaSet := discovery.FindPlugins(pluginType, pluginDirs())
 
-	plugins := make(map[string]discovery.PluginMeta)
 	for plugin := range pluginMetaSet {
-		name := plugin.Name
-		plugins[name] = plugin
+		if plugin.Name == pluginName {
+			return &plugin, nil
+		}
 	}
 
-	return plugins[pluginName]
+	return nil, fmt.Errorf("Failed to find plugin: %s", pluginName)
 }
 
 func pluginDirs() []string {
