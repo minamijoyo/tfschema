@@ -92,6 +92,10 @@ func (c *Client) GetResourceTypeSchema(resourceType string) (string, error) {
 		return "", fmt.Errorf("Failed to get schema from provider: %s", err)
 	}
 
+	if len(res.ResourceTypes) == 0 {
+		return "", fmt.Errorf("Failed to find resource type: %s", resourceType)
+	}
+
 	bytes, err := json.MarshalIndent(res.ResourceTypes, "", "    ")
 	if err != nil {
 		return "", fmt.Errorf("Failed to marshal response: %s", err)
@@ -109,6 +113,10 @@ func (c *Client) GetDataSourceSchema(dataSource string) (string, error) {
 	res, err := c.provider.GetSchema(req)
 	if err != nil {
 		return "", fmt.Errorf("Failed to get schema from provider: %s", err)
+	}
+
+	if len(res.DataSources) == 0 {
+		return "", fmt.Errorf("Failed to find data source: %s", dataSource)
 	}
 
 	bytes, err := json.MarshalIndent(res.DataSources, "", "    ")
