@@ -70,12 +70,12 @@ func (c *Client) GetProviderSchema() (string, error) {
 
 	res, err := c.provider.GetSchema(req)
 	if err != nil {
-		return "", fmt.Errorf("Faild to get schema from provider: %s", err)
+		return "", fmt.Errorf("Failed to get schema from provider: %s", err)
 	}
 
 	bytes, err := json.MarshalIndent(res.Provider, "", "    ")
 	if err != nil {
-		return "", fmt.Errorf("Faild to marshal response: %s", err)
+		return "", fmt.Errorf("Failed to marshal response: %s", err)
 	}
 
 	return string(bytes), nil
@@ -89,12 +89,12 @@ func (c *Client) GetResourceTypeSchema(resourceType string) (string, error) {
 
 	res, err := c.provider.GetSchema(req)
 	if err != nil {
-		return "", fmt.Errorf("Faild to get schema from provider: %s", err)
+		return "", fmt.Errorf("Failed to get schema from provider: %s", err)
 	}
 
 	bytes, err := json.MarshalIndent(res.ResourceTypes, "", "    ")
 	if err != nil {
-		return "", fmt.Errorf("Faild to marshal response: %s", err)
+		return "", fmt.Errorf("Failed to marshal response: %s", err)
 	}
 
 	return string(bytes), nil
@@ -108,12 +108,12 @@ func (c *Client) GetDataSourceSchema(dataSource string) (string, error) {
 
 	res, err := c.provider.GetSchema(req)
 	if err != nil {
-		return "", fmt.Errorf("Faild to get schema from provider: %s", err)
+		return "", fmt.Errorf("Failed to get schema from provider: %s", err)
 	}
 
 	bytes, err := json.MarshalIndent(res.DataSources, "", "    ")
 	if err != nil {
-		return "", fmt.Errorf("Faild to marshal response: %s", err)
+		return "", fmt.Errorf("Failed to marshal response: %s", err)
 	}
 
 	return string(bytes), nil
