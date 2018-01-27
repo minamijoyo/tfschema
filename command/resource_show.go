@@ -1,6 +1,7 @@
 package command
 
 import (
+	"encoding/json"
 	"strings"
 
 	"github.com/minamijoyo/tfschema/tfschema"
@@ -32,13 +33,19 @@ func (c *ResourceShowCommand) Run(args []string) int {
 
 	defer client.Kill()
 
-	output, err := client.GetResourceTypeSchema(resourceType)
+	res, err := client.GetResourceTypeSchema(resourceType)
 	if err != nil {
 		c.Ui.Error(err.Error())
 		return 1
 	}
 
-	c.Ui.Output(output)
+	bytes, err := json.MarshalIndent(res, "", "    ")
+	if err != nil {
+		c.Ui.Error(err.Error())
+		return 1
+	}
+
+	c.Ui.Output(string(bytes))
 
 	return 0
 }

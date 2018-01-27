@@ -27,7 +27,13 @@ func (c *DataListCommand) Run(args []string) int {
 
 	defer client.Kill()
 
-	dataSources := client.DataSources()
+	res := client.DataSources()
+
+	dataSources := []string{}
+	for _, r := range res {
+		dataSources = append(dataSources, r.Name)
+	}
+
 	c.Ui.Output(strings.Join(dataSources, "\n"))
 
 	return 0

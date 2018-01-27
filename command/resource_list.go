@@ -27,7 +27,13 @@ func (c *ResourceListCommand) Run(args []string) int {
 
 	defer client.Kill()
 
-	resourceTypes := client.Resources()
+	res := client.Resources()
+
+	resourceTypes := []string{}
+	for _, r := range res {
+		resourceTypes = append(resourceTypes, r.Name)
+	}
+
 	c.Ui.Output(strings.Join(resourceTypes, "\n"))
 
 	return 0

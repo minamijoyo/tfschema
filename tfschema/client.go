@@ -1,7 +1,6 @@
 package tfschema
 
 import (
-	"encoding/json"
 	"fmt"
 	"go/build"
 	"log"
@@ -10,6 +9,7 @@ import (
 	"reflect"
 	"runtime"
 
+	"github.com/hashicorp/terraform/config/configschema"
 	"github.com/hashicorp/terraform/plugin"
 	"github.com/hashicorp/terraform/plugin/discovery"
 	"github.com/hashicorp/terraform/terraform"
@@ -109,7 +109,7 @@ func pluginDirs() ([]string, error) {
 	return dirs, nil
 }
 
-func (c *Client) GetProviderSchema() (string, error) {
+func (c *Client) GetProviderSchema() (*configschema.Block, error) {
 	req := &terraform.ProviderSchemaRequest{
 		ResourceTypes: []string{},
 		DataSources:   []string{},
@@ -117,18 +117,13 @@ func (c *Client) GetProviderSchema() (string, error) {
 
 	res, err := c.provider.GetSchema(req)
 	if err != nil {
-		return "", fmt.Errorf("Failed to get schema from provider: %s", err)
+		return nil, fmt.Errorf("Failed to get schema from provider: %s", err)
 	}
 
-	bytes, err := json.MarshalIndent(res.Provider, "", "    ")
-	if err != nil {
-		return "", fmt.Errorf("Failed to marshal response: %s", err)
-	}
-
-	return string(bytes), nil
+	return res.Provider, nil
 }
 
-func (c *Client) GetResourceTypeSchema(resourceType string) (string, error) {
+func (c *Client) GetResourceTypeSchema(resourceType string) (*configschema.Block, error) {
 	req := &terraform.ProviderSchemaRequest{
 		ResourceTypes: []string{resourceType},
 		DataSources:   []string{},
@@ -136,22 +131,17 @@ func (c *Client) GetResourceTypeSchema(resourceType string) (string, error) {
 
 	res, err := c.provider.GetSchema(req)
 	if err != nil {
-		return "", fmt.Errorf("Failed to get schema from provider: %s", err)
+		return nil, fmt.Errorf("Failed to get schema from provider: %s", err)
 	}
 
-	if len(res.ResourceTypes) == 0 {
-		return "", fmt.Errorf("Failed to find resource type: %s", resourceType)
+	if res.ResourceTypes[resourceType] == nil {
+		return nil, fmt.Errorf("Failed to find resource type: %s", resourceType)
 	}
 
-	bytes, err := json.MarshalIndent(res.ResourceTypes, "", "    ")
-	if err != nil {
-		return "", fmt.Errorf("Failed to marshal response: %s", err)
-	}
-
-	return string(bytes), nil
+	return res.ResourceTypes[resourceType], nil
 }
 
-func (c *Client) GetDataSourceSchema(dataSource string) (string, error) {
+func (c *Client) GetDataSourceSchema(dataSource string) (*configschema.Block, error) {
 	req := &terraform.ProviderSchemaRequest{
 		ResourceTypes: []string{},
 		DataSources:   []string{dataSource},
@@ -159,41 +149,22 @@ func (c *Client) GetDataSourceSchema(dataSource string) (string, error) {
 
 	res, err := c.provider.GetSchema(req)
 	if err != nil {
-		return "", fmt.Errorf("Failed to get schema from provider: %s", err)
+		return nil, fmt.Errorf("Failed to get schema from provider: %s", err)
 	}
 
-	if len(res.DataSources) == 0 {
-		return "", fmt.Errorf("Failed to find data source: %s", dataSource)
+	if res.DataSources[dataSource] == nil {
+		return nil, fmt.Errorf("Failed to find data source: %s", dataSource)
 	}
 
-	bytes, err := json.MarshalIndent(res.DataSources, "", "    ")
-	if err != nil {
-		return "", fmt.Errorf("Failed to marshal response: %s", err)
-	}
-
-	return string(bytes), nil
+	return res.DataSources[dataSource], nil
 }
 
-func (c *Client) Resources() []string {
-	res := c.provider.Resources()
-
-	resourceTypes := []string{}
-	for _, r := range res {
-		resourceTypes = append(resourceTypes, r.Name)
-	}
-
-	return resourceTypes
+func (c *Client) Resources() []terraform.ResourceType {
+	return c.provider.Resources()
 }
 
-func (c *Client) DataSources() []string {
-	res := c.provider.DataSources()
-
-	dataSources := []string{}
-	for _, r := range res {
-		dataSources = append(dataSources, r.Name)
-	}
-
-	return dataSources
+func (c *Client) DataSources() []terraform.DataSource {
+	return c.provider.DataSources()
 }
 
 func (c *Client) Kill() {
