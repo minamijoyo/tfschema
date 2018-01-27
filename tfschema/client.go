@@ -4,11 +4,16 @@ import (
 	"encoding/json"
 	"fmt"
 	"go/build"
+	"log"
+	"os"
+	"path/filepath"
 	"reflect"
+	"runtime"
 
 	"github.com/hashicorp/terraform/plugin"
 	"github.com/hashicorp/terraform/plugin/discovery"
 	"github.com/hashicorp/terraform/terraform"
+	"github.com/mitchellh/go-homedir"
 )
 
 type Client struct {
@@ -45,7 +50,12 @@ func NewClient(providerName string) (*Client, error) {
 }
 
 func findPlugin(pluginType string, pluginName string) (*discovery.PluginMeta, error) {
-	pluginMetaSet := discovery.FindPlugins(pluginType, pluginDirs())
+	dirs, err := pluginDirs()
+	if err != nil {
+		return nil, err
+	}
+
+	pluginMetaSet := discovery.FindPlugins(pluginType, dirs)
 
 	for plugin := range pluginMetaSet {
 		if plugin.Name == pluginName {
@@ -56,10 +66,47 @@ func findPlugin(pluginType string, pluginName string) (*discovery.PluginMeta, er
 	return nil, fmt.Errorf("Failed to find plugin: %s", pluginName)
 }
 
-func pluginDirs() []string {
+func pluginDirs() ([]string, error) {
+	// build dirs for finding plugin
+	// This is almost the same as Terraform, but not exactly the same.
+	dirs := []string{}
+
+	// current directory
+	dirs = append(dirs, ".")
+
+	// same directory as this executable
+	exePath, err := os.Executable()
+	if err != nil {
+		return []string{}, fmt.Errorf("Failed to get executable path: %s", err)
+	}
+	dirs = append(dirs, filepath.Dir(exePath))
+
+	// user vendor directory
+	arch := runtime.GOOS + "_" + runtime.GOARCH
+	vendorDir := filepath.Join("terraform.d", "plugins", arch)
+	dirs = append(dirs, vendorDir)
+
+	// auto installed directory
+	// This does not take into account overriding the data directory.
+	autoInstalledDir := filepath.Join(".terraform", "plugins", arch)
+	dirs = append(dirs, autoInstalledDir)
+
+	// global plugin directory
+	homeDir, err := homedir.Dir()
+	if err != nil {
+		return []string{}, fmt.Errorf("Failed to get home dir: %s", err)
+	}
+	configDir := filepath.Join(homeDir, ".terraform.d", "plugins")
+	dirs = append(dirs, configDir)
+	dirs = append(dirs, filepath.Join(configDir, arch))
+
+	// GOPATH
+	// This is not included in the Terraform, but for convenience.
 	gopath := build.Default.GOPATH
-	pluginDirs := []string{gopath + "/bin"}
-	return pluginDirs
+	dirs = append(dirs, filepath.Join(gopath, "bin"))
+
+	log.Printf("[DEBUG] plugin dirs: %#v", dirs)
+	return dirs, nil
 }
 
 func (c *Client) GetProviderSchema() (string, error) {
