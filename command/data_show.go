@@ -52,10 +52,7 @@ func (c *DataShowCommand) Run(args []string) int {
 }
 
 func (c *DataShowCommand) AutocompleteArgs() complete.Predictor {
-	return completePredictSequence{
-		complete.PredictNothing,
-		c.completePredictDataSource(),
-	}
+	return c.completePredictDataSource()
 }
 
 func (c *DataShowCommand) AutocompleteFlags() complete.Flags {

@@ -5,17 +5,6 @@ import (
 	"github.com/posener/complete"
 )
 
-type completePredictSequence []complete.Predictor
-
-func (s completePredictSequence) Predict(a complete.Args) []string {
-	idx := len(a.Completed)
-	if idx >= len(s) {
-		return nil
-	}
-
-	return s[idx].Predict(a)
-}
-
 func (m *Meta) completePredictResourceType() complete.Predictor {
 	return complete.PredictFunc(func(args complete.Args) []string {
 

@@ -52,10 +52,7 @@ func (c *ResourceShowCommand) Run(args []string) int {
 }
 
 func (c *ResourceShowCommand) AutocompleteArgs() complete.Predictor {
-	return completePredictSequence{
-		complete.PredictNothing,
-		c.completePredictResourceType(),
-	}
+	return c.completePredictResourceType()
 }
 
 func (c *ResourceShowCommand) AutocompleteFlags() complete.Flags {
