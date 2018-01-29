@@ -5,6 +5,7 @@ import (
 	"strings"
 
 	"github.com/minamijoyo/tfschema/tfschema"
+	"github.com/posener/complete"
 )
 
 type DataShowCommand struct {
@@ -48,6 +49,17 @@ func (c *DataShowCommand) Run(args []string) int {
 	c.Ui.Output(string(bytes))
 
 	return 0
+}
+
+func (c *DataShowCommand) AutocompleteArgs() complete.Predictor {
+	return completePredictSequence{
+		complete.PredictNothing,
+		c.completePredictDataSource(),
+	}
+}
+
+func (c *DataShowCommand) AutocompleteFlags() complete.Flags {
+	return nil
 }
 
 func (c *DataShowCommand) Help() string {

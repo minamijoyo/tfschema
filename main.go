@@ -61,10 +61,13 @@ func wrappedMain() int {
 	args := os.Args[1:]
 
 	c := &cli.CLI{
-		Name:       "tfschema",
-		Args:       args,
-		Commands:   commands,
-		HelpWriter: os.Stdout,
+		Name:                  "tfschema",
+		Args:                  args,
+		Commands:              commands,
+		HelpWriter:            os.Stdout,
+		Autocomplete:          true,
+		AutocompleteInstall:   "install-autocomplete",
+		AutocompleteUninstall: "uninstall-autocomplete",
 	}
 
 	exitStatus, err := c.Run()

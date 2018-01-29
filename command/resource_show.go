@@ -5,6 +5,7 @@ import (
 	"strings"
 
 	"github.com/minamijoyo/tfschema/tfschema"
+	"github.com/posener/complete"
 )
 
 type ResourceShowCommand struct {
@@ -48,6 +49,17 @@ func (c *ResourceShowCommand) Run(args []string) int {
 	c.Ui.Output(string(bytes))
 
 	return 0
+}
+
+func (c *ResourceShowCommand) AutocompleteArgs() complete.Predictor {
+	return completePredictSequence{
+		complete.PredictNothing,
+		c.completePredictResourceType(),
+	}
+}
+
+func (c *ResourceShowCommand) AutocompleteFlags() complete.Flags {
+	return nil
 }
 
 func (c *ResourceShowCommand) Help() string {
