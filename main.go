@@ -126,6 +126,11 @@ func initCommands() map[string]cli.CommandFactory {
 				Meta: meta,
 			}, nil
 		},
+		"provider browse": func() (cli.Command, error) {
+			return &command.ProviderBrowseCommand{
+				Meta: meta,
+			}, nil
+		},
 		"resource list": func() (cli.Command, error) {
 			return &command.ResourceListCommand{
 				Meta: meta,
@@ -136,6 +141,11 @@ func initCommands() map[string]cli.CommandFactory {
 				Meta: meta,
 			}, nil
 		},
+		"resource browse": func() (cli.Command, error) {
+			return &command.ResourceBrowseCommand{
+				Meta: meta,
+			}, nil
+		},
 		"data list": func() (cli.Command, error) {
 			return &command.DataListCommand{
 				Meta: meta,
@@ -143,6 +153,11 @@ func initCommands() map[string]cli.CommandFactory {
 		},
 		"data show": func() (cli.Command, error) {
 			return &command.DataShowCommand{
+				Meta: meta,
+			}, nil
+		},
+		"data browse": func() (cli.Command, error) {
+			return &command.DataBrowseCommand{
 				Meta: meta,
 			}, nil
 		},
