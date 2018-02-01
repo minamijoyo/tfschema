@@ -9,7 +9,6 @@ import (
 	"reflect"
 	"runtime"
 
-	"github.com/hashicorp/terraform/config/configschema"
 	"github.com/hashicorp/terraform/plugin"
 	"github.com/hashicorp/terraform/plugin/discovery"
 	"github.com/hashicorp/terraform/terraform"
@@ -109,7 +108,7 @@ func pluginDirs() ([]string, error) {
 	return dirs, nil
 }
 
-func (c *Client) GetProviderSchema() (*configschema.Block, error) {
+func (c *Client) GetProviderSchema() (*Block, error) {
 	req := &terraform.ProviderSchemaRequest{
 		ResourceTypes: []string{},
 		DataSources:   []string{},
@@ -120,10 +119,11 @@ func (c *Client) GetProviderSchema() (*configschema.Block, error) {
 		return nil, fmt.Errorf("Failed to get schema from provider: %s", err)
 	}
 
-	return res.Provider, nil
+	b := NewBlock(res.Provider)
+	return b, nil
 }
 
-func (c *Client) GetResourceTypeSchema(resourceType string) (*configschema.Block, error) {
+func (c *Client) GetResourceTypeSchema(resourceType string) (*Block, error) {
 	req := &terraform.ProviderSchemaRequest{
 		ResourceTypes: []string{resourceType},
 		DataSources:   []string{},
@@ -138,10 +138,11 @@ func (c *Client) GetResourceTypeSchema(resourceType string) (*configschema.Block
 		return nil, fmt.Errorf("Failed to find resource type: %s", resourceType)
 	}
 
-	return res.ResourceTypes[resourceType], nil
+	b := NewBlock(res.ResourceTypes[resourceType])
+	return b, nil
 }
 
-func (c *Client) GetDataSourceSchema(dataSource string) (*configschema.Block, error) {
+func (c *Client) GetDataSourceSchema(dataSource string) (*Block, error) {
 	req := &terraform.ProviderSchemaRequest{
 		ResourceTypes: []string{},
 		DataSources:   []string{dataSource},
@@ -156,7 +157,8 @@ func (c *Client) GetDataSourceSchema(dataSource string) (*configschema.Block, er
 		return nil, fmt.Errorf("Failed to find data source: %s", dataSource)
 	}
 
-	return res.DataSources[dataSource], nil
+	b := NewBlock(res.DataSources[dataSource])
+	return b, nil
 }
 
 func (c *Client) Resources() []terraform.ResourceType {
