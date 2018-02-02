@@ -3,6 +3,7 @@ package tfschema
 import (
 	"fmt"
 	"reflect"
+	"strings"
 )
 
 type Type struct {
@@ -17,17 +18,18 @@ func NewType(t interface{}) *Type {
 }
 
 func (t *Type) MarshalJSON() ([]byte, error) {
-	v := reflect.ValueOf(t.ctyType).MethodByName("FriendlyName")
+	v := reflect.ValueOf(t.ctyType).MethodByName("GoString")
 	if !v.IsValid() {
-		return nil, fmt.Errorf("Faild to find FriendlyName(): %#v", t)
+		return nil, fmt.Errorf("Faild to find GoString(): %#v", t)
 	}
 
 	nv := v.Call([]reflect.Value{})
 	if len(nv) == 0 {
-		return nil, fmt.Errorf("Faild to call FriendlyName(): %#v", v)
+		return nil, fmt.Errorf("Faild to call GoString(): %#v", v)
 	}
 
-	friendlyName := nv[0].String()
+	name := nv[0].String()
+	pretty := strings.ToLower(strings.Replace(name, "cty.", "", -1))
 
-	return []byte(`"` + friendlyName + `"`), nil
+	return []byte(`"` + pretty + `"`), nil
 }
