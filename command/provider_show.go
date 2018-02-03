@@ -1,7 +1,6 @@
 package command
 
 import (
-	"encoding/json"
 	"strings"
 
 	"github.com/minamijoyo/tfschema/tfschema"
@@ -28,19 +27,19 @@ func (c *ProviderShowCommand) Run(args []string) int {
 
 	defer client.Kill()
 
-	res, err := client.GetProviderSchema()
+	block, err := client.GetProviderSchema()
 	if err != nil {
 		c.Ui.Error(err.Error())
 		return 1
 	}
 
-	bytes, err := json.MarshalIndent(res, "", "    ")
+	out, err := block.FormatJSON()
 	if err != nil {
 		c.Ui.Error(err.Error())
 		return 1
 	}
 
-	c.Ui.Output(string(bytes))
+	c.Ui.Output(out)
 
 	return 0
 }
