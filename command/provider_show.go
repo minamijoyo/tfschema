@@ -33,7 +33,7 @@ func (c *ProviderShowCommand) Run(args []string) int {
 		return 1
 	}
 
-	out, err := block.FormatJSON()
+	out, err := block.FormatTable()
 	if err != nil {
 		c.Ui.Error(err.Error())
 		return 1

@@ -18,18 +18,27 @@ func NewType(t interface{}) *Type {
 }
 
 func (t *Type) MarshalJSON() ([]byte, error) {
+	name, err := t.Name()
+	if err != nil {
+		return nil, err
+	}
+
+	return []byte(`"` + name + `"`), nil
+}
+
+func (t *Type) Name() (string, error) {
 	v := reflect.ValueOf(t.ctyType).MethodByName("GoString")
 	if !v.IsValid() {
-		return nil, fmt.Errorf("Faild to find GoString(): %#v", t)
+		return "", fmt.Errorf("Faild to find GoString(): %#v", t)
 	}
 
 	nv := v.Call([]reflect.Value{})
 	if len(nv) == 0 {
-		return nil, fmt.Errorf("Faild to call GoString(): %#v", v)
+		return "", fmt.Errorf("Faild to call GoString(): %#v", v)
 	}
 
-	name := nv[0].String()
-	pretty := strings.ToLower(strings.Replace(name, "cty.", "", -1))
+	goString := nv[0].String()
+	name := strings.ToLower(strings.Replace(goString, "cty.", "", -1))
 
-	return []byte(`"` + pretty + `"`), nil
+	return name, nil
 }
