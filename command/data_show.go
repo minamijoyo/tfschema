@@ -1,6 +1,8 @@
 package command
 
 import (
+	"flag"
+	"fmt"
 	"strings"
 
 	"github.com/minamijoyo/tfschema/tfschema"
@@ -9,16 +11,24 @@ import (
 
 type DataShowCommand struct {
 	Meta
+	format string
 }
 
 func (c *DataShowCommand) Run(args []string) int {
-	if len(args) != 1 {
+	cmdFlags := flag.NewFlagSet("data show", flag.ContinueOnError)
+	cmdFlags.StringVar(&c.format, "format", "table", "")
+
+	if err := cmdFlags.Parse(args); err != nil {
+		return 1
+	}
+
+	if len(cmdFlags.Args()) != 1 {
 		c.Ui.Error("The data show command expects DATA_SOURCE")
 		c.Ui.Error(c.Help())
 		return 1
 	}
 
-	dataSource := args[0]
+	dataSource := cmdFlags.Args()[0]
 	providerName, err := detectProviderName(dataSource)
 	if err != nil {
 		c.Ui.Error(err.Error())
@@ -39,7 +49,18 @@ func (c *DataShowCommand) Run(args []string) int {
 		return 1
 	}
 
-	out, err := block.FormatTable()
+	var out string
+	switch c.format {
+	case "table":
+		out, err = block.FormatTable()
+	case "json":
+		out, err = block.FormatJSON()
+	default:
+		c.Ui.Error(fmt.Sprintf("Unknown output format: %s", c.format))
+		c.Ui.Error(c.Help())
+		return 1
+	}
+
 	if err != nil {
 		c.Ui.Error(err.Error())
 		return 1
@@ -60,7 +81,11 @@ func (c *DataShowCommand) AutocompleteFlags() complete.Flags {
 
 func (c *DataShowCommand) Help() string {
 	helpText := `
-Usage: tfschema data show DATA_SOURCE
+Usage: tfschema data show [options] DATA_SOURCE
+
+Options:
+
+  -format=type    Set output format to table or json (default: table)
 `
 	return strings.TrimSpace(helpText)
 }

@@ -1,6 +1,8 @@
 package command
 
 import (
+	"flag"
+	"fmt"
 	"strings"
 
 	"github.com/minamijoyo/tfschema/tfschema"
@@ -8,16 +10,24 @@ import (
 
 type ProviderShowCommand struct {
 	Meta
+	format string
 }
 
 func (c *ProviderShowCommand) Run(args []string) int {
-	if len(args) != 1 {
+	cmdFlags := flag.NewFlagSet("provider show", flag.ContinueOnError)
+	cmdFlags.StringVar(&c.format, "format", "table", "")
+
+	if err := cmdFlags.Parse(args); err != nil {
+		return 1
+	}
+
+	if len(cmdFlags.Args()) != 1 {
 		c.Ui.Error("The provider show command expects PROVIDER")
 		c.Ui.Error(c.Help())
 		return 1
 	}
 
-	providerName := args[0]
+	providerName := cmdFlags.Args()[0]
 
 	client, err := tfschema.NewClient(providerName)
 	if err != nil {
@@ -33,7 +43,18 @@ func (c *ProviderShowCommand) Run(args []string) int {
 		return 1
 	}
 
-	out, err := block.FormatTable()
+	var out string
+	switch c.format {
+	case "table":
+		out, err = block.FormatTable()
+	case "json":
+		out, err = block.FormatJSON()
+	default:
+		c.Ui.Error(fmt.Sprintf("Unknown output format: %s", c.format))
+		c.Ui.Error(c.Help())
+		return 1
+	}
+
 	if err != nil {
 		c.Ui.Error(err.Error())
 		return 1
@@ -46,7 +67,11 @@ func (c *ProviderShowCommand) Run(args []string) int {
 
 func (c *ProviderShowCommand) Help() string {
 	helpText := `
-Usage: tfschema provider show PROVIDER
+Usage: tfschema provider show [options] PROVIDER
+
+Options:
+
+  -format=type    Set output format to table or json (default: table)
 `
 	return strings.TrimSpace(helpText)
 }
