@@ -38,7 +38,7 @@ func (t *Type) Name() (string, error) {
 	}
 
 	goString := nv[0].String()
-	name := strings.ToLower(strings.Replace(goString, "cty.", "", -1))
+	name := strings.Replace(goString, "cty.", "", -1)
 
 	return name, nil
 }
