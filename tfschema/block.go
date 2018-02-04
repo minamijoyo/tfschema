@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
+	"sort"
 	"strconv"
 
 	"github.com/hashicorp/terraform/config/configschema"
@@ -79,7 +80,16 @@ func (b *Block) renderAttributes() (string, error) {
 	table.SetHeaderAlignment(tablewriter.ALIGN_LEFT)
 
 	table.SetHeader([]string{"attribute", "type", "required", "optional", "computed", "sensitive"})
-	for k, v := range b.Attributes {
+
+	// sort map keys
+	keys := []string{}
+	for k := range b.Attributes {
+		keys = append(keys, k)
+	}
+	sort.Strings(keys)
+
+	for _, k := range keys {
+		v := b.Attributes[k]
 		typeName, err := v.Type.Name()
 		if err != nil {
 			return "", err
@@ -107,7 +117,16 @@ func (b *Block) renderBlockTypes() (string, error) {
 	}
 
 	buf := new(bytes.Buffer)
-	for k, v := range b.BlockTypes {
+
+	// sort map keys
+	keys := []string{}
+	for k := range b.BlockTypes {
+		keys = append(keys, k)
+	}
+	sort.Strings(keys)
+
+	for _, k := range keys {
+		v := b.BlockTypes[k]
 		blockType := fmt.Sprintf("\nblock_type: %s, nesting: %s, min_items: %d, max_items: %d\n", k, v.Nesting, v.MinItems, v.MaxItems)
 		buf.WriteString(blockType)
 
