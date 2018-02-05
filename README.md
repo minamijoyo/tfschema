@@ -19,7 +19,7 @@ aws_security_group
 aws_security_group_rule
 ```
 
-```bash
+```
 $ tfschema resource show aws_security_group
 +------------------------+-------------+----------+----------+----------+-----------+
 | ATTRIBUTE              | TYPE        | REQUIRED | OPTIONAL | COMPUTED | SENSITIVE |
