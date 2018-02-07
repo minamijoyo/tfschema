@@ -2,6 +2,8 @@
 
 A schema inspector for Terraform providers.
 
+![demo](/images/tfschema-demo.gif)
+
 Note that tfschema is under development and its interface is unstable.
 
 # Features
