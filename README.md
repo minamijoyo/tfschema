@@ -71,11 +71,11 @@ block_type: ingress, nesting: NestingSet, min_items: 0, max_items: 0
 $ go get -u github.com/minamijoyo/tfschema
 ```
 
-The tfschema depends on the latest Terraform's API, and currently does not work unless you patch the provider.
+The tfschema depends on the Terraform's GetSchema API, and currently does not work unless you patch the provider.
 
 The tfschema requires the provider's dependency library version to:
 
-- hashicorp/terraform >= v0.11.3
+- hashicorp/terraform >= v0.10.8
 - zclconf/go-cty >= 14e23b14828dd12cc7ae0956813c7e91a196e68f
 
 For example, to update the aws provider's go-cty version, execute the following command:
