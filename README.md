@@ -76,7 +76,7 @@ The tfschema depends on the Terraform's GetSchema API, and currently does not wo
 The tfschema requires the provider's dependency library version to:
 
 - hashicorp/terraform >= v0.10.8
-- zclconf/go-cty >= 14e23b14828dd12cc7ae0956813c7e91a196e68f
+- zclconf/go-cty >= 14e23b14828dd12cc7ae0956813c7e91a196e68f (2018/01/06)
 
 For example, to update the aws provider's go-cty version, execute the following command:
 
