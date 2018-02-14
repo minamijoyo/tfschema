@@ -12,21 +12,21 @@ type ProviderBrowseCommand struct {
 
 func (c *ProviderBrowseCommand) Run(args []string) int {
 	if len(args) != 1 {
-		c.Ui.Error("The provider browse command expects PROVIDER")
-		c.Ui.Error(c.Help())
+		c.UI.Error("The provider browse command expects PROVIDER")
+		c.UI.Error(c.Help())
 		return 1
 	}
 
 	providerName := args[0]
 	url, err := buildProviderDocURL(providerName)
 	if err != nil {
-		c.Ui.Error(err.Error())
+		c.UI.Error(err.Error())
 		return 1
 	}
 
 	err = browser.OpenURL(url)
 	if err != nil {
-		c.Ui.Error(err.Error())
+		c.UI.Error(err.Error())
 		return 1
 	}
 

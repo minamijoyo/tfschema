@@ -15,10 +15,11 @@ import (
 	"github.com/mitchellh/panicwrap"
 )
 
-var Ui cli.Ui
+// UI is a user interface which is a global variable for mocking.
+var UI cli.Ui
 
 func init() {
-	Ui = &cli.BasicUi{
+	UI = &cli.BasicUi{
 		Writer: os.Stdout,
 	}
 }
@@ -72,14 +73,14 @@ func wrappedMain() int {
 
 	exitStatus, err := c.Run()
 	if err != nil {
-		Ui.Error(fmt.Sprintf("Failed to execute CLI: %s", err))
+		UI.Error(fmt.Sprintf("Failed to execute CLI: %s", err))
 	}
 
 	return exitStatus
 }
 
 func panicHandler(output string) {
-	Ui.Error(fmt.Sprintf("The child panicked:\n\n%s\n", output))
+	UI.Error(fmt.Sprintf("The child panicked:\n\n%s\n", output))
 	os.Exit(1)
 }
 
@@ -117,7 +118,7 @@ func copyOutput(r io.Reader, doneCh chan<- struct{}) {
 
 func initCommands() map[string]cli.CommandFactory {
 	meta := command.Meta{
-		Ui: Ui,
+		UI: UI,
 	}
 
 	commands := map[string]cli.CommandFactory{

@@ -23,21 +23,21 @@ func (c *DataShowCommand) Run(args []string) int {
 	}
 
 	if len(cmdFlags.Args()) != 1 {
-		c.Ui.Error("The data show command expects DATA_SOURCE")
-		c.Ui.Error(c.Help())
+		c.UI.Error("The data show command expects DATA_SOURCE")
+		c.UI.Error(c.Help())
 		return 1
 	}
 
 	dataSource := cmdFlags.Args()[0]
 	providerName, err := detectProviderName(dataSource)
 	if err != nil {
-		c.Ui.Error(err.Error())
+		c.UI.Error(err.Error())
 		return 1
 	}
 
 	client, err := tfschema.NewClient(providerName)
 	if err != nil {
-		c.Ui.Error(err.Error())
+		c.UI.Error(err.Error())
 		return 1
 	}
 
@@ -45,7 +45,7 @@ func (c *DataShowCommand) Run(args []string) int {
 
 	block, err := client.GetDataSourceSchema(dataSource)
 	if err != nil {
-		c.Ui.Error(err.Error())
+		c.UI.Error(err.Error())
 		return 1
 	}
 
@@ -56,17 +56,17 @@ func (c *DataShowCommand) Run(args []string) int {
 	case "json":
 		out, err = block.FormatJSON()
 	default:
-		c.Ui.Error(fmt.Sprintf("Unknown output format: %s", c.format))
-		c.Ui.Error(c.Help())
+		c.UI.Error(fmt.Sprintf("Unknown output format: %s", c.format))
+		c.UI.Error(c.Help())
 		return 1
 	}
 
 	if err != nil {
-		c.Ui.Error(err.Error())
+		c.UI.Error(err.Error())
 		return 1
 	}
 
-	c.Ui.Output(out)
+	c.UI.Output(out)
 
 	return 0
 }

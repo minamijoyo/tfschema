@@ -13,21 +13,21 @@ type DataBrowseCommand struct {
 
 func (c *DataBrowseCommand) Run(args []string) int {
 	if len(args) != 1 {
-		c.Ui.Error("The data browse command expects DATA_SOURCE")
-		c.Ui.Error(c.Help())
+		c.UI.Error("The data browse command expects DATA_SOURCE")
+		c.UI.Error(c.Help())
 		return 1
 	}
 
 	dataSource := args[0]
 	url, err := buildDataDocURL(dataSource)
 	if err != nil {
-		c.Ui.Error(err.Error())
+		c.UI.Error(err.Error())
 		return 1
 	}
 
 	err = browser.OpenURL(url)
 	if err != nil {
-		c.Ui.Error(err.Error())
+		c.UI.Error(err.Error())
 		return 1
 	}
 

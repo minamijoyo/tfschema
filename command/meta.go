@@ -10,7 +10,7 @@ import (
 const docBaseURL = "https://www.terraform.io/docs/providers/"
 
 type Meta struct {
-	Ui cli.Ui
+	UI cli.Ui
 }
 
 func detectProviderName(name string) (string, error) {

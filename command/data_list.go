@@ -12,8 +12,8 @@ type DataListCommand struct {
 
 func (c *DataListCommand) Run(args []string) int {
 	if len(args) != 1 {
-		c.Ui.Error("The data list command expects PROVIDER")
-		c.Ui.Error(c.Help())
+		c.UI.Error("The data list command expects PROVIDER")
+		c.UI.Error(c.Help())
 		return 1
 	}
 
@@ -21,7 +21,7 @@ func (c *DataListCommand) Run(args []string) int {
 
 	client, err := tfschema.NewClient(providerName)
 	if err != nil {
-		c.Ui.Error(err.Error())
+		c.UI.Error(err.Error())
 		return 1
 	}
 
@@ -34,7 +34,7 @@ func (c *DataListCommand) Run(args []string) int {
 		dataSources = append(dataSources, r.Name)
 	}
 
-	c.Ui.Output(strings.Join(dataSources, "\n"))
+	c.UI.Output(strings.Join(dataSources, "\n"))
 
 	return 0
 }

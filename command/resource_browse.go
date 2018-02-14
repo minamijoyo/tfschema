@@ -13,21 +13,21 @@ type ResourceBrowseCommand struct {
 
 func (c *ResourceBrowseCommand) Run(args []string) int {
 	if len(args) != 1 {
-		c.Ui.Error("The resource browse command expects RESOURCE_TYPE")
-		c.Ui.Error(c.Help())
+		c.UI.Error("The resource browse command expects RESOURCE_TYPE")
+		c.UI.Error(c.Help())
 		return 1
 	}
 
 	resourceType := args[0]
 	url, err := buildResourceDocURL(resourceType)
 	if err != nil {
-		c.Ui.Error(err.Error())
+		c.UI.Error(err.Error())
 		return 1
 	}
 
 	err = browser.OpenURL(url)
 	if err != nil {
-		c.Ui.Error(err.Error())
+		c.UI.Error(err.Error())
 		return 1
 	}
 
