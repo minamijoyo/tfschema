@@ -9,11 +9,13 @@ import (
 	"github.com/posener/complete"
 )
 
+// ResourceShowCommand is a command which shows a type definition of resource.
 type ResourceShowCommand struct {
 	Meta
 	format string
 }
 
+// Run runs the procedure of this command.
 func (c *ResourceShowCommand) Run(args []string) int {
 	cmdFlags := flag.NewFlagSet("resource show", flag.ContinueOnError)
 	cmdFlags.StringVar(&c.format, "format", "table", "")
@@ -71,14 +73,17 @@ func (c *ResourceShowCommand) Run(args []string) int {
 	return 0
 }
 
+// AutocompleteArgs returns the argument predictor.
 func (c *ResourceShowCommand) AutocompleteArgs() complete.Predictor {
 	return c.completePredictResourceType()
 }
 
+// AutocompleteFlags returns a mapping of supported flags and options.
 func (c *ResourceShowCommand) AutocompleteFlags() complete.Flags {
 	return nil
 }
 
+// Help returns long-form help text.
 func (c *ResourceShowCommand) Help() string {
 	helpText := `
 Usage: tfschema resource show [options] RESOURCE_TYPE
@@ -90,6 +95,7 @@ Options:
 	return strings.TrimSpace(helpText)
 }
 
+// Synopsis returns one-line help text.
 func (c *ResourceShowCommand) Synopsis() string {
 	return "Show a type definition of resource"
 }

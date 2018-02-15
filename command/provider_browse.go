@@ -6,10 +6,12 @@ import (
 	"github.com/pkg/browser"
 )
 
+// ProviderBrowseCommand is a command which browses a documentation of provider.
 type ProviderBrowseCommand struct {
 	Meta
 }
 
+// Run runs the procedure of this command.
 func (c *ProviderBrowseCommand) Run(args []string) int {
 	if len(args) != 1 {
 		c.UI.Error("The provider browse command expects PROVIDER")
@@ -33,6 +35,7 @@ func (c *ProviderBrowseCommand) Run(args []string) int {
 	return 0
 }
 
+// Help returns long-form help text.
 func (c *ProviderBrowseCommand) Help() string {
 	helpText := `
 Usage: tfschema provider browse PROVIDER
@@ -40,6 +43,7 @@ Usage: tfschema provider browse PROVIDER
 	return strings.TrimSpace(helpText)
 }
 
+// Synopsis returns one-line help text.
 func (c *ProviderBrowseCommand) Synopsis() string {
 	return "Browse a documentation of provider"
 }

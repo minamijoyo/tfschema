@@ -9,11 +9,13 @@ import (
 	"github.com/posener/complete"
 )
 
+// DataShowCommand is a command which shows a type definition of data source.
 type DataShowCommand struct {
 	Meta
 	format string
 }
 
+// Run runs the procedure of this command.
 func (c *DataShowCommand) Run(args []string) int {
 	cmdFlags := flag.NewFlagSet("data show", flag.ContinueOnError)
 	cmdFlags.StringVar(&c.format, "format", "table", "")
@@ -71,14 +73,17 @@ func (c *DataShowCommand) Run(args []string) int {
 	return 0
 }
 
+// AutocompleteArgs returns the argument predictor.
 func (c *DataShowCommand) AutocompleteArgs() complete.Predictor {
 	return c.completePredictDataSource()
 }
 
+// AutocompleteFlags returns a mapping of supported flags and options.
 func (c *DataShowCommand) AutocompleteFlags() complete.Flags {
 	return nil
 }
 
+// Help returns long-form help text.
 func (c *DataShowCommand) Help() string {
 	helpText := `
 Usage: tfschema data show [options] DATA_SOURCE
@@ -90,6 +95,7 @@ Options:
 	return strings.TrimSpace(helpText)
 }
 
+// Synopsis returns one-line help text.
 func (c *DataShowCommand) Synopsis() string {
 	return "Show a type definition of data source"
 }

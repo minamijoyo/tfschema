@@ -8,11 +8,13 @@ import (
 	"github.com/minamijoyo/tfschema/tfschema"
 )
 
+// ProviderShowCommand is a command which shows a type definition of provider.
 type ProviderShowCommand struct {
 	Meta
 	format string
 }
 
+// Run runs the procedure of this command.
 func (c *ProviderShowCommand) Run(args []string) int {
 	cmdFlags := flag.NewFlagSet("provider show", flag.ContinueOnError)
 	cmdFlags.StringVar(&c.format, "format", "table", "")
@@ -65,6 +67,7 @@ func (c *ProviderShowCommand) Run(args []string) int {
 	return 0
 }
 
+// Help returns long-form help text.
 func (c *ProviderShowCommand) Help() string {
 	helpText := `
 Usage: tfschema provider show [options] PROVIDER
@@ -76,6 +79,7 @@ Options:
 	return strings.TrimSpace(helpText)
 }
 
+// Synopsis returns one-line help text.
 func (c *ProviderShowCommand) Synopsis() string {
 	return "Show a type definition of provider"
 }
