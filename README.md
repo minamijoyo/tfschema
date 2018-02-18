@@ -2,16 +2,14 @@
 
 A schema inspector for Terraform providers.
 
-![demo](/images/tfschema-demo.gif)
-
-Note that tfschema is under development and its interface is unstable.
-
 # Features
 
-- Get resource type definitons dynamically from Terraform providers.
+- Get resource type definitions dynamically from Terraform providers via go-plugin protocol.
 - List available resource types.
 - Autocomplete resource types in bash/zsh.
-- Open official provider documents quickly by your system browser.
+- Open official provider documents quickly by your system web browser.
+
+![demo](/images/tfschema-demo.gif)
 
 # Example
 
@@ -89,7 +87,6 @@ $ go install
 
 This step will be unnecessary in the future if the provider's dependency is updated officially.
 
-# FAQ
 If you got errors like the following, this means your provider does not support GetSchema API correctly, you need to update the go-cty in the provider's dependency.
 
 ```bash
