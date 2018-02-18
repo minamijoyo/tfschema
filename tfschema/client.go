@@ -15,8 +15,11 @@ import (
 	"github.com/mitchellh/go-homedir"
 )
 
+// Client represents a tfschema Client.
 type Client struct {
+	// provider is a resource provider of Terraform.
 	provider terraform.ResourceProvider
+	// pluginClient is a pointer to plugin client instance.
 	// The type of pluginClient is
 	// *github.com/hashicorp/terraform/vendor/github.com/hashicorp/go-plugin.Client.
 	// But, we cannot import the vendor version of go-plugin using terraform.
@@ -24,18 +27,22 @@ type Client struct {
 	pluginClient interface{}
 }
 
+// NewClient creates a new Client instance.
 func NewClient(providerName string) (*Client, error) {
+	// find a provider plugin
 	pluginMeta, err := findPlugin("provider", providerName)
 	if err != nil {
 		return nil, err
 	}
 
+	// initialize a plugin client.
 	pluginClient := plugin.Client(*pluginMeta)
 	rpcClient, err := pluginClient.Client()
 	if err != nil {
 		return nil, fmt.Errorf("Failed to initialize plugin: %s", err)
 	}
 
+	// create a new resource provider.
 	raw, err := rpcClient.Dispense(plugin.ProviderPluginName)
 	if err != nil {
 		return nil, fmt.Errorf("Failed to dispense plugin: %s", err)
@@ -48,6 +55,7 @@ func NewClient(providerName string) (*Client, error) {
 	}, nil
 }
 
+// findPlugin finds a plugin with the name specified in the arguments.
 func findPlugin(pluginType string, pluginName string) (*discovery.PluginMeta, error) {
 	dirs, err := pluginDirs()
 	if err != nil {
@@ -65,9 +73,9 @@ func findPlugin(pluginType string, pluginName string) (*discovery.PluginMeta, er
 	return nil, fmt.Errorf("Failed to find plugin: %s", pluginName)
 }
 
+// pluginDirs returns a list of directories to find plugin.
+// This is almost the same as Terraform, but not exactly the same.
 func pluginDirs() ([]string, error) {
-	// build dirs for finding plugin
-	// This is almost the same as Terraform, but not exactly the same.
 	dirs := []string{}
 
 	// current directory
@@ -108,6 +116,7 @@ func pluginDirs() ([]string, error) {
 	return dirs, nil
 }
 
+// GetProviderSchema returns a type definiton of provider schema.
 func (c *Client) GetProviderSchema() (*Block, error) {
 	req := &terraform.ProviderSchemaRequest{
 		ResourceTypes: []string{},
@@ -123,6 +132,7 @@ func (c *Client) GetProviderSchema() (*Block, error) {
 	return b, nil
 }
 
+// GetResourceTypeSchema returns a type definiton of resource type.
 func (c *Client) GetResourceTypeSchema(resourceType string) (*Block, error) {
 	req := &terraform.ProviderSchemaRequest{
 		ResourceTypes: []string{resourceType},
@@ -142,6 +152,7 @@ func (c *Client) GetResourceTypeSchema(resourceType string) (*Block, error) {
 	return b, nil
 }
 
+// GetDataSourceSchema returns a type definiton of data source.
 func (c *Client) GetDataSourceSchema(dataSource string) (*Block, error) {
 	req := &terraform.ProviderSchemaRequest{
 		ResourceTypes: []string{},
@@ -161,15 +172,20 @@ func (c *Client) GetDataSourceSchema(dataSource string) (*Block, error) {
 	return b, nil
 }
 
+// Resources returns a list of resource types.
 func (c *Client) Resources() []terraform.ResourceType {
 	return c.provider.Resources()
 }
 
+// DataSources returns a list of data sources.
 func (c *Client) DataSources() []terraform.DataSource {
 	return c.provider.DataSources()
 }
 
+// Kill kills a process of the plugin.
 func (c *Client) Kill() {
+	// We cannot import the vendor version of go-plugin using terraform.
+	// So, we call (*go-plugin.Client).Kill() by reflection here.
 	v := reflect.ValueOf(c.pluginClient).MethodByName("Kill")
 	v.Call([]reflect.Value{})
 }

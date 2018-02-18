@@ -11,12 +11,17 @@ import (
 	"github.com/olekukonko/tablewriter"
 )
 
-// Block is wrapper for configschema.Block
+// Block is wrapper for configschema.Block.
+// This ia a layer for customization not enough for Terraform's core.
+// Most of the structure is the smae as the core, but some are different.
 type Block struct {
-	Attributes map[string]*Attribute   `json:"attributes"`
+	// Attributes is a map of any attributes.
+	Attributes map[string]*Attribute `json:"attributes"`
+	// BlockTypes is a map of any nested block types.
 	BlockTypes map[string]*NestedBlock `json:"block_types"`
 }
 
+// NewBlock creates a new Block instance.
 func NewBlock(b *configschema.Block) *Block {
 	return &Block{
 		Attributes: NewAttributes(b.Attributes),
@@ -24,6 +29,7 @@ func NewBlock(b *configschema.Block) *Block {
 	}
 }
 
+// NewAttributes creates a new map of Attributes.
 func NewAttributes(as map[string]*configschema.Attribute) map[string]*Attribute {
 	m := make(map[string]*Attribute)
 
@@ -34,6 +40,7 @@ func NewAttributes(as map[string]*configschema.Attribute) map[string]*Attribute 
 	return m
 }
 
+// NewBlockTypes creates a new map of NestedBlocks.
 func NewBlockTypes(bs map[string]*configschema.NestedBlock) map[string]*NestedBlock {
 	m := make(map[string]*NestedBlock)
 
@@ -44,6 +51,7 @@ func NewBlockTypes(bs map[string]*configschema.NestedBlock) map[string]*NestedBl
 	return m
 }
 
+// FormatJSON returns a formatted string in JSON format.
 func (b *Block) FormatJSON() (string, error) {
 	bytes, err := json.MarshalIndent(b, "", "    ")
 	if err != nil {
@@ -53,10 +61,12 @@ func (b *Block) FormatJSON() (string, error) {
 	return string(bytes), nil
 }
 
+// FormatTable returns a formatted string in table format.
 func (b *Block) FormatTable() (string, error) {
 	return b.renderBlock()
 }
 
+// renderBlock returns a formatted string in table format for Block.
 func (b *Block) renderBlock() (string, error) {
 	buf := new(bytes.Buffer)
 	attributes, err := b.renderAttributes()
@@ -74,6 +84,7 @@ func (b *Block) renderBlock() (string, error) {
 	return buf.String(), nil
 }
 
+// renderAttributes returns a formatted string in table format for Attributes.
 func (b *Block) renderAttributes() (string, error) {
 	buf := new(bytes.Buffer)
 	table := tablewriter.NewWriter(buf)
@@ -111,6 +122,7 @@ func (b *Block) renderAttributes() (string, error) {
 	return buf.String(), nil
 }
 
+// renderBlockTypes returns a formatted string in table format for BlockTypes.
 func (b *Block) renderBlockTypes() (string, error) {
 	if len(b.BlockTypes) == 0 {
 		return "", nil
