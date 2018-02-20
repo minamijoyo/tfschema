@@ -154,7 +154,7 @@ Options:
 Any feedback and contributions are welcome. Feel free to open an issue and submit a pull request.
 
 # Acknowledgments
-The tfschema is built on Terraform and its providers. I'm sincerely grateful to these authors.
+The tfschema is built on Terraform and its providers. I'm sincerely grateful to those authors.
 
 # License
 MIT
