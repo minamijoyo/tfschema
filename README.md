@@ -69,6 +69,11 @@ block_type: ingress, nesting: NestingSet, min_items: 0, max_items: 0
 $ go get -u github.com/minamijoyo/tfschema
 ```
 
+# Requirements for Terraform providers
+
+- terraform-provider-google >= v1.5.0
+- terraform-provider-aws (Unfortunately not supported yet, currently you need to patch)
+
 The tfschema depends on the Terraform's GetSchema API, and currently does not work unless you patch the provider.
 
 The tfschema requires the provider's dependency library version to:
@@ -87,11 +92,70 @@ $ go install
 
 This step will be unnecessary in the future if the provider's dependency is updated officially.
 
-If you got errors like the following, this means your provider does not support GetSchema API correctly, you need to update the go-cty in the provider's dependency.
+See: https://github.com/terraform-providers/terraform-provider-aws/pull/3456
+
+# Known Issues
+## Decoding cty.Type
+If you got errors like the following, this means your provider does not support GetSchema API correctly, you need to update the `go-cty` in the provider's dependency.
 
 ```bash
 $ tfschema resource show aws_security_group
 Failed to get schema from provider: reading body error decoding cty.Type: gob: name not registered for interface: "github.com/terraform-providers/terraform-provider-aws/vendor/github.com/zclconf/go-cty/cty.primitiveType"
+```
+
+See: https://github.com/terraform-providers/terraform-provider-aws/pull/3456
+
+## Invalid schema
+
+If you got errors like the following, this means some resource types have invalid schema information.
+
+```bash
+$ tfschema resource show aws_glue_catalog_database
+Failed to get schema from provider: unexpected EOF
+The child panicked:
+
+panic: invalid Schema.Elem 4; need *Schema or *Resource
+```
+
+There is a conflict between the Terraform core error checking and the provider implementation.
+
+See: https://github.com/hashicorp/terraform/pull/17097
+
+Currently the following resources have this problem for major providers.
+
+### terraform-provider-aws
+- data/aws_ecs_container_definition
+- data/aws_vpc_peering_connection
+- resource/aws_api_gateway_deployment
+- resource/aws_api_gateway_gateway_response
+- resource/aws_api_gateway_integration
+- resource/aws_api_gateway_integration_response
+- resource/aws_api_gateway_method
+- resource/aws_api_gateway_method_response
+- resource/aws_batch_job_definition
+- resource/aws_glue_catalog_database
+- resource/aws_lambda_function
+
+refs: https://github.com/terraform-providers/terraform-provider-aws/pull/3429
+
+### terraform-provider-google
+- data/source_storage_object_signed_url
+- resource/bigquery_dataset
+- resource/bigquery_table
+- resource/compute_instance
+- resource/compute_project_metadata
+- resource/dataproc_cluster
+- resource/pubsub_subscription
+
+refs: https://github.com/terraform-providers/terraform-provider-google/pull/950
+
+## Can't find method Plugin.GetSchema
+
+If you got errors like the following, this means your provider depends on too old terraform core to support GetSchema API, you need to update the `terraform` and the `go-cty` in the provider's dependency.
+
+```
+$ tfschema resource show azurerm_app_service
+Failed to get schema from provider: rpc: can't find method Plugin.GetSchema
 ```
 
 # Autocomplete
