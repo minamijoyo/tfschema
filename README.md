@@ -13,7 +13,7 @@ A schema inspector for Terraform providers.
 
 # Example
 
-```bash
+```
 $ tfschema resource list aws | grep aws_security
 aws_security_group
 aws_security_group_rule
@@ -65,7 +65,7 @@ block_type: ingress, nesting: NestingSet, min_items: 0, max_items: 0
 
 # Install
 
-```bash
+```
 $ go get -u github.com/minamijoyo/tfschema
 ```
 
@@ -83,7 +83,7 @@ The tfschema requires the provider's dependency library version to:
 
 For example, to update the aws provider's go-cty version, execute the following command:
 
-```bash
+```
 $ go get -u github.com/terraform-providers/terraform-provider-aws
 $ go get -u github.com/kardianos/govendor
 $ govendor fetch github.com/zclconf/go-cty/...
@@ -98,7 +98,7 @@ See: https://github.com/terraform-providers/terraform-provider-aws/pull/3456
 ## Decoding cty.Type
 If you got errors like the following, this means your provider does not support GetSchema API correctly, you need to update the `go-cty` in the provider's dependency.
 
-```bash
+```
 $ tfschema resource show aws_security_group
 Failed to get schema from provider: reading body error decoding cty.Type: gob: name not registered for interface: "github.com/terraform-providers/terraform-provider-aws/vendor/github.com/zclconf/go-cty/cty.primitiveType"
 ```
@@ -109,7 +109,7 @@ See: https://github.com/terraform-providers/terraform-provider-aws/pull/3456
 
 If you got errors like the following, this means some resource types have invalid schema information.
 
-```bash
+```
 $ tfschema resource show aws_glue_catalog_database
 Failed to get schema from provider: unexpected EOF
 The child panicked:
@@ -162,7 +162,7 @@ Failed to get schema from provider: rpc: can't find method Plugin.GetSchema
 
 To enable autocomplete, execute the following command:
 
-```bash
+```
 $ tfschema -install-autocomplete
 ```
 
@@ -185,7 +185,7 @@ Check your .bashrc and/or .zshrc and reload it.
 
 # Usage
 
-```bash
+```
 $ tfschema --help
 Usage: tfschema [--version] [--help] <command> [<args>]
 
@@ -195,7 +195,7 @@ Available commands are:
     resource
 ```
 
-```bash
+```
 $ tfschema resource --help
 This command is accessed by using one of the subcommands below.
 
@@ -205,7 +205,7 @@ Subcommands:
     show      Show a type definition of resource
 ```
 
-```bash
+```
 $ tfschema resource show --help
 Usage: tfschema resource show [options] RESOURCE_TYPE
 
