@@ -72,9 +72,11 @@ $ go get -u github.com/minamijoyo/tfschema
 # Requirements for Terraform providers
 
 - terraform-provider-google >= v1.5.0
-- terraform-provider-aws (Unfortunately not supported yet, currently you need to patch)
+- terraform-provider-azurerm >= v1.3.0 (Unreleased)
+- terraform-provider-aws (Unfortunately not supported yet, currently you need to patch the provider. See below)
 
-The tfschema depends on the Terraform's GetSchema API, and currently does not work unless you patch the provider.
+## Patch and build your provider binary
+The tfschema depends on the Terraform's GetSchema API, and currently some providers do not work unless you patch the provider.
 
 The tfschema requires the provider's dependency library version to:
 
