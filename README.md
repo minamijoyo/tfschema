@@ -73,28 +73,16 @@ $ go get -u github.com/minamijoyo/tfschema
 
 - terraform-provider-google >= v1.5.0
 - terraform-provider-azurerm >= v1.3.0 (Unreleased)
-- terraform-provider-aws (Unfortunately not supported yet, currently you need to patch the provider. See below)
+- terraform-provider-aws >= v1.11.0 (Unreleased)
 
-## Patch and build your provider binary
+## Other providers
+Your provider may or may not support the API.
 The tfschema depends on the Terraform's GetSchema API, and currently some providers do not work unless you patch the provider.
 
 The tfschema requires the provider's dependency library version to:
 
 - hashicorp/terraform >= v0.10.8
 - zclconf/go-cty >= 14e23b14828dd12cc7ae0956813c7e91a196e68f (2018/01/06)
-
-For example, to update the aws provider's go-cty version, execute the following command:
-
-```
-$ go get -u github.com/terraform-providers/terraform-provider-aws
-$ go get -u github.com/kardianos/govendor
-$ govendor fetch github.com/zclconf/go-cty/...
-$ go install
-```
-
-This step will be unnecessary in the future if the provider's dependency is updated officially.
-
-See: https://github.com/terraform-providers/terraform-provider-aws/pull/3456
 
 # Known Issues
 ## Decoding cty.Type
@@ -105,7 +93,18 @@ $ tfschema resource show aws_security_group
 Failed to get schema from provider: reading body error decoding cty.Type: gob: name not registered for interface: "github.com/terraform-providers/terraform-provider-aws/vendor/github.com/zclconf/go-cty/cty.primitiveType"
 ```
 
-See: https://github.com/terraform-providers/terraform-provider-aws/pull/3456
+Note that this error log is output from the old `aws` provider, but the latest `aws` provider does not need a patch already.
+
+For example, to update your provider's go-cty version, execute the following command:
+
+```
+$ go get -u github.com/terraform-providers/terraform-provider-<NAME>
+$ go get -u github.com/kardianos/govendor
+$ govendor fetch github.com/zclconf/go-cty/...
+$ go install
+```
+
+This step will be unnecessary in the future if your provider's dependency is updated officially.
 
 ## Invalid schema
 
@@ -159,6 +158,8 @@ If you got errors like the following, this means your provider depends on too ol
 $ tfschema resource show azurerm_app_service
 Failed to get schema from provider: rpc: can't find method Plugin.GetSchema
 ```
+
+Note that this error log is output from the old `azurerm` provider, but the latest `azurerm` provider does not need a patch already.
 
 # Autocomplete
 
