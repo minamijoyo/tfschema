@@ -15,6 +15,9 @@ import (
 	"github.com/mitchellh/panicwrap"
 )
 
+// Version is a version number.
+var version = "0.0.1-dev"
+
 // UI is a user interface which is a global variable for mocking.
 var UI cli.Ui
 
@@ -63,6 +66,7 @@ func wrappedMain() int {
 
 	c := &cli.CLI{
 		Name:                  "tfschema",
+		Version:               version,
 		Args:                  args,
 		Commands:              commands,
 		HelpWriter:            os.Stdout,
