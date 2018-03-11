@@ -1,0 +1,9 @@
+# .goreleaser.yml
+# Build customization
+builds:
+  - binary: tfschema
+    goos:
+      - darwin
+      - linux
+    goarch:
+      - amd64
