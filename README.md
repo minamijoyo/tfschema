@@ -71,9 +71,9 @@ $ go get -u github.com/minamijoyo/tfschema
 
 # Requirements for Terraform providers
 
+- terraform-provider-aws >= v1.11.0
 - terraform-provider-google >= v1.5.0
 - terraform-provider-azurerm >= v1.3.0 (Unreleased)
-- terraform-provider-aws >= v1.11.0 (Unreleased)
 
 ## Other providers
 Your provider may or may not support the API.
