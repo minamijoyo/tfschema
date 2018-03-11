@@ -65,9 +65,25 @@ block_type: ingress, nesting: NestingSet, min_items: 0, max_items: 0
 
 # Install
 
+If you are Mac OSX user:
+
 ```
-$ go get -u github.com/minamijoyo/tfschema
+$ brew install minamijoyo/tfschema/tfschema
 ```
+
+or
+
+If you have Go development environment:
+
+```
+$ go get github.com/minamijoyo/tfschema
+```
+
+or
+
+Download the latest compiled binaries and put it anywhere in your executable path.
+
+https://github.com/minamijoyo/tfschema/releases
 
 # Requirements for Terraform providers
 
