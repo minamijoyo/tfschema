@@ -100,6 +100,20 @@ The tfschema requires the provider's dependency library version to:
 - hashicorp/terraform >= v0.10.8
 - zclconf/go-cty >= 14e23b14828dd12cc7ae0956813c7e91a196e68f (2018/01/06)
 
+# Rules of finding provider's binary
+The tfschema finds provider's binary under the following directories.
+This is almost the same as Terraform, but not exactly the same.
+
+1. current directory
+2. same directory as `tfschema` executable
+3. user vendor directory (terraform.d/plugins/`<OS>_<GOARCH>`)
+4. auto installed directory (.terraform/plugins/`<OS>_<GOARCH>`)
+5. global plugin directory ($HOME/.terraform.d/plugins)
+6. global plugin directory with os and arch ($HOME/.terraform.d/plugins/`<OS>_<GOARCH>`)
+7. GOPATH/bin ($GOPATH/bin)
+
+For example, if you are Mac OSX user, `<OS>_<GOARCH>` is `darwin_amd64`.
+
 # Known Issues
 ## Decoding cty.Type
 If you got errors like the following, this means your provider does not support GetSchema API correctly, you need to update the `go-cty` in the provider's dependency.
