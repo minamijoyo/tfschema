@@ -7,3 +7,17 @@ builds:
       - linux
     goarch:
       - amd64
+brew:
+  github:
+    owner: minamijoyo
+    name: homebrew-tfschema
+  commit_author:
+    name: "Masayuki Morita"
+    email: minamijoyo@gmail.com
+  homepage: https://github.com/minamijoyo/tfschema
+  description: "A schema inspector for Terraform providers."
+  skip_upload: false
+  test: |
+    system "#{bin}/tfschema --version"
+  install: |
+    bin.install "tfschema"
