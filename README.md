@@ -76,7 +76,7 @@ or
 If you have Go development environment:
 
 ```
-$ go get github.com/minamijoyo/tfschema
+$ go get -u github.com/minamijoyo/tfschema
 ```
 
 or
@@ -92,7 +92,7 @@ https://github.com/minamijoyo/tfschema/releases
 - terraform-provider-azurerm >= v1.3.0 (Unreleased)
 
 ## Other providers
-Your provider may or may not support the API.
+Your provider may or may not support a required API.
 The tfschema depends on the Terraform's GetSchema API, and currently some providers do not work unless you patch the provider.
 
 The tfschema requires the provider's dependency library version to:
@@ -101,18 +101,79 @@ The tfschema requires the provider's dependency library version to:
 - zclconf/go-cty >= 14e23b14828dd12cc7ae0956813c7e91a196e68f (2018/01/06)
 
 # Rules of finding provider's binary
+When `terraform init` is excluted, provider's binary is installed under the auto installed directory ( .terraform/plugins/`<OS>_<GOARCH>` ) by default.
+The tfschema uses the provider's binary in the same way as the terraform. So you can run `tfschema` command in the same directory where you run the `terraform` command.
+
+If your code base has not used a supported version of the provider yet, you can also use tfschema with other provider binaries installed in different directories.
+
 The tfschema finds provider's binary under the following directories.
 This is almost the same as Terraform, but not exactly the same.
 
 1. current directory
 2. same directory as `tfschema` executable
-3. user vendor directory (terraform.d/plugins/`<OS>_<GOARCH>`)
-4. auto installed directory (.terraform/plugins/`<OS>_<GOARCH>`)
-5. global plugin directory ($HOME/.terraform.d/plugins)
-6. global plugin directory with os and arch ($HOME/.terraform.d/plugins/`<OS>_<GOARCH>`)
-7. GOPATH/bin ($GOPATH/bin)
+3. user vendor directory ( terraform.d/plugins/`<OS>_<GOARCH>` )
+4. auto installed directory ( .terraform/plugins/`<OS>_<GOARCH>` )
+5. global plugin directory ( $HOME/.terraform.d/plugins )
+6. global plugin directory with os and arch ( $HOME/.terraform.d/plugins/`<OS>_<GOARCH>` )
+7. gopath ( $GOPATH/bin )
 
-For example, if you are Mac OSX user, `<OS>_<GOARCH>` is `darwin_amd64`.
+Note: if you are Mac OSX user, `<OS>_<GOARCH>` is `darwin_amd64`.
+
+# Autocomplete
+
+To enable autocomplete, execute the following command:
+
+```
+$ tfschema -install-autocomplete
+```
+
+The above command adds the following line to your ~/.bashrc and ~/.zshrc:
+
+.bashrc
+
+```bash
+complete -C </path/to/tfschema> tfschema
+```
+
+.zshrc
+
+```bash
+autoload -U +X bashcompinit && bashcompinit
+complete -o nospace -C </path/to/tfschema> tfschema
+```
+
+Check your .bashrc and/or .zshrc and reload it.
+
+# Usage
+
+```
+$ tfschema --help
+Usage: tfschema [--version] [--help] <command> [<args>]
+
+Available commands are:
+    data
+    provider
+    resource
+```
+
+```
+$ tfschema resource --help
+This command is accessed by using one of the subcommands below.
+
+Subcommands:
+    browse    Browse a documentation of resource
+    list      List resource types
+    show      Show a type definition of resource
+```
+
+```
+$ tfschema resource show --help
+Usage: tfschema resource show [options] RESOURCE_TYPE
+
+Options:
+
+  -format=type    Set output format to table or json (default: table)
+```
 
 # Known Issues
 ## Decoding cty.Type
@@ -190,62 +251,6 @@ Failed to get schema from provider: rpc: can't find method Plugin.GetSchema
 ```
 
 Note that this error log is output from the old `azurerm` provider, but the latest `azurerm` provider does not need a patch already.
-
-# Autocomplete
-
-To enable autocomplete, execute the following command:
-
-```
-$ tfschema -install-autocomplete
-```
-
-The above command adds the following line to your ~/.bashrc and ~/.zshrc:
-
-.bashrc
-
-```bash
-complete -C </path/to/tfschema> tfschema
-```
-
-.zshrc
-
-```bash
-autoload -U +X bashcompinit && bashcompinit
-complete -o nospace -C </path/to/tfschema> tfschema
-```
-
-Check your .bashrc and/or .zshrc and reload it.
-
-# Usage
-
-```
-$ tfschema --help
-Usage: tfschema [--version] [--help] <command> [<args>]
-
-Available commands are:
-    data
-    provider
-    resource
-```
-
-```
-$ tfschema resource --help
-This command is accessed by using one of the subcommands below.
-
-Subcommands:
-    browse    Browse a documentation of resource
-    list      List resource types
-    show      Show a type definition of resource
-```
-
-```
-$ tfschema resource show --help
-Usage: tfschema resource show [options] RESOURCE_TYPE
-
-Options:
-
-  -format=type    Set output format to table or json (default: table)
-```
 
 # Contributions
 Any feedback and contributions are welcome. Feel free to open an issue and submit a pull request.
