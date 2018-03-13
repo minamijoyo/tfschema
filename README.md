@@ -101,23 +101,23 @@ The tfschema requires the provider's dependency library version to:
 - zclconf/go-cty >= 14e23b14828dd12cc7ae0956813c7e91a196e68f (2018/01/06)
 
 # Rules of finding provider's binary
-When `terraform init` is excluted, provider's binary is installed under the auto installed directory ( .terraform/plugins/`<OS>_<GOARCH>` ) by default.
-The tfschema uses the provider's binary in the same way as the terraform. So you can run `tfschema` command in the same directory where you run the `terraform` command.
+When `terraform init` command is executed, provider's binary is installed under the auto installed directory ( .terraform/plugins/`<OS>_<ARCH>` ) by default.
+The tfschema can use the same provider's binary as terraform uses, so you can run `tfschema` command in the same directory where you run the `terraform` command.
 
-If your code base has not used a supported version of the provider yet, you can also use tfschema with other provider binaries installed in different directories.
+If your code base does not use the supported version of the provider yet, you can also use tfschema with other provider's binary installed in different directories.
 
 The tfschema finds provider's binary under the following directories.
-This is almost the same as Terraform, but not exactly the same.
+This is almost the same as terraform, but not exactly the same.
 
 1. current directory
 2. same directory as `tfschema` executable
-3. user vendor directory ( terraform.d/plugins/`<OS>_<GOARCH>` )
-4. auto installed directory ( .terraform/plugins/`<OS>_<GOARCH>` )
+3. user vendor directory ( terraform.d/plugins/`<OS>_<ARCH>` )
+4. auto installed directory ( .terraform/plugins/`<OS>_<ARCH>` )
 5. global plugin directory ( $HOME/.terraform.d/plugins )
-6. global plugin directory with os and arch ( $HOME/.terraform.d/plugins/`<OS>_<GOARCH>` )
+6. global plugin directory with os and arch ( $HOME/.terraform.d/plugins/`<OS>_<ARCH>` )
 7. gopath ( $GOPATH/bin )
 
-Note: if you are Mac OSX user, `<OS>_<GOARCH>` is `darwin_amd64`.
+Note: if you are Mac OSX user, `<OS>_<ARCH>` is `darwin_amd64`.
 
 # Autocomplete
 
