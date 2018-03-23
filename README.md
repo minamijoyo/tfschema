@@ -96,7 +96,7 @@ https://github.com/minamijoyo/tfschema/releases
 
 - terraform-provider-aws >= v1.11.0
 - terraform-provider-google >= v1.5.0
-- terraform-provider-azurerm >= v1.3.0 (Unreleased)
+- terraform-provider-azurerm >= v1.3.0
 
 ## Other providers
 Your provider may or may not support a required API.
