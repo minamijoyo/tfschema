@@ -11,7 +11,14 @@ A schema inspector for Terraform providers.
 
 ![demo](/images/tfschema-demo.gif)
 
-# Example
+# Getting Started
+
+```
+$ brew install minamijoyo/tfschema/tfschema
+
+$ echo 'provider "aws" {}' > main.tf
+$ terraform init
+```
 
 ```
 $ tfschema resource list aws | grep aws_security
