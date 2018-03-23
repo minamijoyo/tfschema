@@ -8,6 +8,7 @@ import (
 	"path/filepath"
 	"reflect"
 	"runtime"
+	"strings"
 
 	"github.com/hashicorp/terraform/plugin"
 	"github.com/hashicorp/terraform/plugin/discovery"
@@ -70,7 +71,7 @@ func findPlugin(pluginType string, pluginName string) (*discovery.PluginMeta, er
 		}
 	}
 
-	return nil, fmt.Errorf("Failed to find plugin: %s", pluginName)
+	return nil, fmt.Errorf("Failed to find plugin: %s. Plugin binary was not found in any of the following directories: [%s]", pluginName, strings.Join(dirs, ", "))
 }
 
 // pluginDirs returns a list of directories to find plugin.
