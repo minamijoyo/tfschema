@@ -63,12 +63,13 @@ func findPlugin(pluginType string, pluginName string) (*discovery.PluginMeta, er
 		return nil, err
 	}
 
-	pluginMetaSet := discovery.FindPlugins(pluginType, dirs)
+	pluginMetaSet := discovery.FindPlugins(pluginType, dirs).WithName(pluginName)
 
-	for plugin := range pluginMetaSet {
-		if plugin.Name == pluginName {
-			return &plugin, nil
-		}
+	// if pluginMetaSet doesn't have any pluginMeta, pluginMetaSet.Newest() will call panic.
+	// so check it here.
+	if pluginMetaSet.Count() > 0 {
+		ret := pluginMetaSet.Newest()
+		return &ret, nil
 	}
 
 	return nil, fmt.Errorf("Failed to find plugin: %s. Plugin binary was not found in any of the following directories: [%s]", pluginName, strings.Join(dirs, ", "))
