@@ -2,7 +2,6 @@ package command
 
 import (
 	"flag"
-	"fmt"
 	"strings"
 
 	"github.com/minamijoyo/tfschema/tfschema"
@@ -51,17 +50,7 @@ func (c *DataShowCommand) Run(args []string) int {
 		return 1
 	}
 
-	var out string
-	switch c.format {
-	case "table":
-		out, err = block.FormatTable()
-	case "json":
-		out, err = block.FormatJSON()
-	default:
-		c.UI.Error(fmt.Sprintf("Unknown output format: %s", c.format))
-		c.UI.Error(c.Help())
-		return 1
-	}
+	out, err := formatBlock(block, c.format)
 
 	if err != nil {
 		c.UI.Error(err.Error())
