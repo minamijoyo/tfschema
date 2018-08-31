@@ -1,14 +1,7 @@
 package tfschema
 
 import (
-	"bytes"
-	"encoding/json"
-	"fmt"
-	"sort"
-	"strconv"
-
 	"github.com/hashicorp/terraform/config/configschema"
-	"github.com/olekukonko/tablewriter"
 )
 
 // Block is wrapper for configschema.Block.
@@ -49,106 +42,4 @@ func NewBlockTypes(bs map[string]*configschema.NestedBlock) map[string]*NestedBl
 	}
 
 	return m
-}
-
-// FormatJSON returns a formatted string in JSON format.
-func (b *Block) FormatJSON() (string, error) {
-	bytes, err := json.MarshalIndent(b, "", "    ")
-	if err != nil {
-		return "", err
-	}
-
-	return string(bytes), nil
-}
-
-// FormatTable returns a formatted string in table format.
-func (b *Block) FormatTable() (string, error) {
-	return b.renderBlock()
-}
-
-// renderBlock returns a formatted string in table format for Block.
-func (b *Block) renderBlock() (string, error) {
-	buf := new(bytes.Buffer)
-	attributes, err := b.renderAttributes()
-	if err != nil {
-		return "", err
-	}
-	buf.WriteString(attributes)
-
-	blockTypes, err := b.renderBlockTypes()
-	if err != nil {
-		return "", err
-	}
-	buf.WriteString(blockTypes)
-
-	return buf.String(), nil
-}
-
-// renderAttributes returns a formatted string in table format for Attributes.
-func (b *Block) renderAttributes() (string, error) {
-	buf := new(bytes.Buffer)
-	table := tablewriter.NewWriter(buf)
-	table.SetHeaderAlignment(tablewriter.ALIGN_LEFT)
-
-	table.SetHeader([]string{"attribute", "type", "required", "optional", "computed", "sensitive"})
-
-	// sort map keys
-	keys := []string{}
-	for k := range b.Attributes {
-		keys = append(keys, k)
-	}
-	sort.Strings(keys)
-
-	for _, k := range keys {
-		v := b.Attributes[k]
-		typeName, err := v.Type.Name()
-		if err != nil {
-			return "", err
-		}
-
-		row := []string{
-			k,
-			typeName,
-			strconv.FormatBool(v.Required),
-			strconv.FormatBool(v.Optional),
-			strconv.FormatBool(v.Computed),
-			strconv.FormatBool(v.Sensitive),
-		}
-		table.Append(row)
-	}
-
-	table.Render()
-
-	return buf.String(), nil
-}
-
-// renderBlockTypes returns a formatted string in table format for BlockTypes.
-func (b *Block) renderBlockTypes() (string, error) {
-	if len(b.BlockTypes) == 0 {
-		return "", nil
-	}
-
-	buf := new(bytes.Buffer)
-
-	// sort map keys
-	keys := []string{}
-	for k := range b.BlockTypes {
-		keys = append(keys, k)
-	}
-	sort.Strings(keys)
-
-	for _, k := range keys {
-		v := b.BlockTypes[k]
-		blockType := fmt.Sprintf("\nblock_type: %s, nesting: %s, min_items: %d, max_items: %d\n", k, v.Nesting, v.MinItems, v.MaxItems)
-		buf.WriteString(blockType)
-
-		block, err := v.renderBlock()
-		if err != nil {
-			return "", err
-		}
-
-		buf.WriteString(block)
-	}
-
-	return buf.String(), nil
 }

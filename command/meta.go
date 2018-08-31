@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"strings"
 
+	"github.com/minamijoyo/tfschema/formatter"
+	"github.com/minamijoyo/tfschema/tfschema"
 	"github.com/mitchellh/cli"
 )
 
@@ -52,4 +54,13 @@ func buildDataDocURL(dataSource string) (string, error) {
 	// https://www.terraform.io/docs/providers/aws/d/security_group.html
 	url := docBaseURL + s[0] + "/d/" + s[1] + ".html"
 	return url, nil
+}
+
+// formatBlock is a helper function for formatting tfschema.Block.
+func formatBlock(b *tfschema.Block, format string) (string, error) {
+	f, err := formatter.NewBlockFormatter(b, format)
+	if err != nil {
+		return "", err
+	}
+	return f.Format()
 }
