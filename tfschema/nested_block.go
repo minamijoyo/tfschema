@@ -1,7 +1,7 @@
 package tfschema
 
 import (
-	"github.com/hashicorp/terraform/config/configschema"
+	"github.com/hashicorp/terraform/configs/configschema"
 )
 
 // NestedBlock is wrapper for configschema.NestedBlock
