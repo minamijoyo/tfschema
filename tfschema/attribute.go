@@ -1,7 +1,7 @@
 package tfschema
 
 import (
-	"github.com/hashicorp/terraform/config/configschema"
+	"github.com/hashicorp/terraform/configs/configschema"
 )
 
 // Attribute is wrapper for configschema.Attribute.
