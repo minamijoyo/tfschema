@@ -80,10 +80,13 @@ $ brew install minamijoyo/tfschema/tfschema
 
 or
 
-If you have Go development environment:
+If you have Go 1.12+ development environment:
 
-```
-$ go get -u github.com/minamijoyo/tfschema
+```bash
+$ git clone https://github.com/minamijoyo/tfschema
+$ cd tfschema
+$ export GO111MODULE=on
+$ go install
 ```
 
 or

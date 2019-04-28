@@ -1,18 +1,20 @@
 NAME := tfschema
 
-DEP := $(GOBIN)/dep
-LINT := $(GOBIN)/golint
+ifndef GOBIN
+GOBIN := $(shell echo "$${GOPATH%%:*}/bin")
+endif
+
+GOLINT := $(GOBIN)/golint
 GORELEASER := $(GOBIN)/goreleaser
 
-$(DEP): ; @go get github.com/golang/dep/cmd/dep
-$(LINT): ; @go get github.com/golang/lint/golint
-$(GORELEASER): ; @go get github.com/goreleaser/goreleaser
+$(GOLINT): ; @go install github.com/golang/lint/golint
+$(GORELEASER): ; @go install github.com/goreleaser/goreleaser
 
 .DEFAULT_GOAL := build
 
 .PHONY: deps
-deps: $(DEP)
-	dep ensure
+deps:
+	go mod download
 
 .PHONY: build
 build: deps
@@ -23,7 +25,7 @@ install: deps
 	go install
 
 .PHONY: lint
-lint: $(LINT)
+lint: $(GOLINT)
 	golint $$(go list ./... | grep -v /vendor/)
 
 .PHONY: vet
