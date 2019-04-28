@@ -2,6 +2,8 @@
 
 A schema inspector for Terraform providers.
 
+NOTICE: The master branch may be broken due to development for Terraform v0.12 support. Use the tf-0.11 branch or a precompiled binary to use with Terraform v0.11.
+
 # Features
 
 - Get resource type definitions dynamically from Terraform providers via go-plugin protocol.
