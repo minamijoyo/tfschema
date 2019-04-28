@@ -7,7 +7,7 @@ endif
 GOLINT := $(GOBIN)/golint
 GORELEASER := $(GOBIN)/goreleaser
 
-$(GOLINT): ; @go install github.com/golang/lint/golint
+$(GOLINT): ; @go install golang.org/x/lint/golint
 $(GORELEASER): ; @go install github.com/goreleaser/goreleaser
 
 .DEFAULT_GOAL := build
