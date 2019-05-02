@@ -119,11 +119,21 @@ func pluginDirs() ([]string, error) {
 	return dirs, nil
 }
 
-// GetProviderSchema returns a type definiton of provider schema.
-func (c *Client) GetProviderSchema() (*Block, error) {
+// getSchema is a helper function to get a schema from provider.
+func (c *Client) getSchema() (providers.GetSchemaResponse, error) {
 	res := c.provider.GetSchema()
 	if res.Diagnostics.HasErrors() {
-		return nil, fmt.Errorf("Failed to get schema from provider: %s", res.Diagnostics.Err())
+		return res, fmt.Errorf("Failed to get schema from provider: %s", res.Diagnostics.Err())
+	}
+
+	return res, nil
+}
+
+// GetProviderSchema returns a type definiton of provider schema.
+func (c *Client) GetProviderSchema() (*Block, error) {
+	res, err := c.getSchema()
+	if err != nil {
+		return nil, err
 	}
 
 	b := NewBlock(res.Provider.Block)
@@ -132,9 +142,9 @@ func (c *Client) GetProviderSchema() (*Block, error) {
 
 // GetResourceTypeSchema returns a type definiton of resource type.
 func (c *Client) GetResourceTypeSchema(resourceType string) (*Block, error) {
-	res := c.provider.GetSchema()
-	if res.Diagnostics.HasErrors() {
-		return nil, fmt.Errorf("Failed to get schema from provider: %s", res.Diagnostics.Err())
+	res, err := c.getSchema()
+	if err != nil {
+		return nil, err
 	}
 
 	schema, ok := res.ResourceTypes[resourceType]
@@ -148,9 +158,9 @@ func (c *Client) GetResourceTypeSchema(resourceType string) (*Block, error) {
 
 // GetDataSourceSchema returns a type definiton of data source.
 func (c *Client) GetDataSourceSchema(dataSource string) (*Block, error) {
-	res := c.provider.GetSchema()
-	if res.Diagnostics.HasErrors() {
-		return nil, fmt.Errorf("Failed to get schema from provider: %s", res.Diagnostics.Err())
+	res, err := c.getSchema()
+	if err != nil {
+		return nil, err
 	}
 
 	schema, ok := res.DataSources[dataSource]
@@ -164,9 +174,9 @@ func (c *Client) GetDataSourceSchema(dataSource string) (*Block, error) {
 
 // ResourceTypes returns a list of resource types.
 func (c *Client) ResourceTypes() ([]string, error) {
-	res := c.provider.GetSchema()
-	if res.Diagnostics.HasErrors() {
-		return nil, fmt.Errorf("Failed to get schema from provider: %s", res.Diagnostics.Err())
+	res, err := c.getSchema()
+	if err != nil {
+		return nil, err
 	}
 
 	keys := make([]string, 0, len(res.ResourceTypes))
@@ -180,9 +190,9 @@ func (c *Client) ResourceTypes() ([]string, error) {
 
 // DataSources returns a list of data sources.
 func (c *Client) DataSources() ([]string, error) {
-	res := c.provider.GetSchema()
-	if res.Diagnostics.HasErrors() {
-		return nil, fmt.Errorf("Failed to get schema from provider: %s", res.Diagnostics.Err())
+	res, err := c.getSchema()
+	if err != nil {
+		return nil, err
 	}
 
 	keys := make([]string, 0, len(res.DataSources))
