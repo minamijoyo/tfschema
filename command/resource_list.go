@@ -27,7 +27,7 @@ func (c *ResourceListCommand) Run(args []string) int {
 		return 1
 	}
 
-	defer client.Kill()
+	defer client.Close()
 
 	resourceTypes, err := client.ResourceTypes()
 	if err != nil {

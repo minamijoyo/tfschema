@@ -36,7 +36,7 @@ func (c *ProviderShowCommand) Run(args []string) int {
 		return 1
 	}
 
-	defer client.Kill()
+	defer client.Close()
 
 	block, err := client.GetProviderSchema()
 	if err != nil {

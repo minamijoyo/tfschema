@@ -6,7 +6,6 @@ import (
 	"log"
 	"os"
 	"path/filepath"
-	"reflect"
 	"runtime"
 	"sort"
 	"strings"
@@ -21,12 +20,6 @@ import (
 type Client struct {
 	// provider is a provider interface of Terraform.
 	provider providers.Interface
-	// pluginClient is a pointer to plugin client instance.
-	// The type of pluginClient is
-	// *github.com/hashicorp/terraform/vendor/github.com/hashicorp/go-plugin.Client.
-	// But, we cannot import the vendor version of go-plugin using terraform.
-	// So, we store this as interface{}, and use it by reflection.
-	pluginClient interface{}
 }
 
 // NewClient creates a new Client instance.
@@ -51,10 +44,17 @@ func NewClient(providerName string) (*Client, error) {
 	}
 	provider := raw.(*plugin.GRPCProvider)
 
+	// To clean up the plugin process, we need to explicitly store references.
+	provider.PluginClient = pluginClient
+
 	return &Client{
-		provider:     provider,
-		pluginClient: pluginClient,
+		provider: provider,
 	}, nil
+}
+
+// Close closes a connection and kills a process of the plugin.
+func (c *Client) Close() {
+	c.provider.Close()
 }
 
 // findPlugin finds a plugin with the name specified in the arguments.
@@ -202,12 +202,4 @@ func (c *Client) DataSources() ([]string, error) {
 
 	sort.Strings(keys)
 	return keys, nil
-}
-
-// Kill kills a process of the plugin.
-func (c *Client) Kill() {
-	// We cannot import the vendor version of go-plugin using terraform.
-	// So, we call (*go-plugin.Client).Kill() by reflection here.
-	v := reflect.ValueOf(c.pluginClient).MethodByName("Kill")
-	v.Call([]reflect.Value{})
 }

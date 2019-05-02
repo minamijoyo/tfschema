@@ -27,7 +27,7 @@ func (c *DataListCommand) Run(args []string) int {
 		return 1
 	}
 
-	defer client.Kill()
+	defer client.Close()
 
 	dataSources, err := client.DataSources()
 	if err != nil {

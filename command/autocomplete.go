@@ -19,7 +19,7 @@ func (m *Meta) completePredictResourceType() complete.Predictor {
 			return nil
 		}
 
-		defer client.Kill()
+		defer client.Close()
 
 		resourceTypes, err := client.ResourceTypes()
 		if err != nil {
@@ -45,7 +45,7 @@ func (m *Meta) completePredictDataSource() complete.Predictor {
 			return nil
 		}
 
-		defer client.Kill()
+		defer client.Close()
 
 		dataSources, err := client.DataSources()
 		if err != nil {

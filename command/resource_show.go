@@ -42,7 +42,7 @@ func (c *ResourceShowCommand) Run(args []string) int {
 		return 1
 	}
 
-	defer client.Kill()
+	defer client.Close()
 
 	block, err := client.GetResourceTypeSchema(resourceType)
 	if err != nil {
