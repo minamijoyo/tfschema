@@ -29,11 +29,10 @@ func (c *ResourceListCommand) Run(args []string) int {
 
 	defer client.Kill()
 
-	res := client.Resources()
-
-	resourceTypes := []string{}
-	for _, r := range res {
-		resourceTypes = append(resourceTypes, r.Name)
+	resourceTypes, err := client.ResourceTypes()
+	if err != nil {
+		c.UI.Error(err.Error())
+		return 1
 	}
 
 	c.UI.Output(strings.Join(resourceTypes, "\n"))
