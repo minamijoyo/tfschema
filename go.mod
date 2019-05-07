@@ -13,6 +13,7 @@ require (
 	github.com/olekukonko/tablewriter v0.0.0-20180506121414-d4647c9c7a84
 	github.com/pkg/browser v0.0.0-20170505125900-c90ca0c84f15
 	github.com/posener/complete v1.2.1
+	github.com/zclconf/go-cty v0.0.0-20190320224746-fd76348b9329
 	golang.org/x/lint v0.0.0-20190409202823-959b441ac422
 	golang.org/x/oauth2 v0.0.0-20190402181905-9f3314589c9a // indirect
 	golang.org/x/sync v0.0.0-20190423024810-112230192c58 // indirect
