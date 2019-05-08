@@ -5,6 +5,7 @@ go 1.12
 require (
 	github.com/aws/aws-sdk-go v1.19.19 // indirect
 	github.com/goreleaser/goreleaser v0.106.0
+	github.com/hashicorp/go-plugin v0.0.0-20190322172744-52e1c4730856
 	github.com/hashicorp/logutils v1.0.0
 	github.com/hashicorp/terraform v0.12.0-beta2
 	github.com/mitchellh/cli v1.0.0

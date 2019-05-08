@@ -7,54 +7,105 @@ import (
 	"os"
 	"path/filepath"
 	"runtime"
-	"sort"
 	"strings"
 
-	"github.com/hashicorp/terraform/plugin"
+	plugin "github.com/hashicorp/go-plugin"
+	tfplugin "github.com/hashicorp/terraform/plugin"
 	"github.com/hashicorp/terraform/plugin/discovery"
-	"github.com/hashicorp/terraform/providers"
 	"github.com/mitchellh/go-homedir"
 )
 
-// Client represents a tfschema Client.
-type Client struct {
-	// provider is a provider interface of Terraform.
-	provider providers.Interface
+// Client represents a set of methods required to get resource type definitons
+// from Terraform providers.
+// Terraform v0.12+ has a different provider interface from v0.11.
+// This is a compatibility layer for Terraform v0.11/v0.12+.
+type Client interface {
+	// GetProviderSchema returns a type definiton of provider schema.
+	GetProviderSchema() (*Block, error)
+
+	// GetResourceTypeSchema returns a type definiton of resource type.
+	GetResourceTypeSchema(resourceType string) (*Block, error)
+
+	// GetDataSourceSchema returns a type definiton of data source.
+	GetDataSourceSchema(dataSource string) (*Block, error)
+
+	// ResourceTypes returns a list of resource types.
+	ResourceTypes() ([]string, error)
+
+	// DataSources returns a list of data sources.
+	DataSources() ([]string, error)
+
+	// Close closes a connection and kills a process of the plugin.
+	Close()
 }
 
 // NewClient creates a new Client instance.
-func NewClient(providerName string) (*Client, error) {
+func NewClient(providerName string) (Client, error) {
 	// find a provider plugin
 	pluginMeta, err := findPlugin("provider", providerName)
 	if err != nil {
 		return nil, err
 	}
 
+	// create a plugin client config
+	config := newClientConfig(pluginMeta)
+
 	// initialize a plugin client.
-	pluginClient := plugin.Client(*pluginMeta)
-	gRPCClient, err := pluginClient.Client()
+	pluginClient := plugin.NewClient(config)
+	client, err := pluginClient.Client()
 	if err != nil {
 		return nil, fmt.Errorf("Failed to initialize plugin: %s", err)
 	}
 
 	// create a new resource provider.
-	raw, err := gRPCClient.Dispense(plugin.ProviderPluginName)
+	raw, err := client.Dispense(tfplugin.ProviderPluginName)
 	if err != nil {
 		return nil, fmt.Errorf("Failed to dispense plugin: %s", err)
 	}
-	provider := raw.(*plugin.GRPCProvider)
 
-	// To clean up the plugin process, we need to explicitly store references.
-	provider.PluginClient = pluginClient
+	switch provider := raw.(type) {
+	// For Terraform v0.11
+	case *tfplugin.ResourceProvider:
+		return &NetRPCClient{
+			provider:     provider,
+			pluginClient: pluginClient,
+		}, nil
 
-	return &Client{
-		provider: provider,
-	}, nil
+	// For Terraform v0.12+
+	case *tfplugin.GRPCProvider:
+		// To clean up the plugin process, we need to explicitly store references.
+		provider.PluginClient = pluginClient
+
+		return &GRPCClient{
+			provider: provider,
+		}, nil
+
+	default:
+		return nil, fmt.Errorf("Failed to type cast. unknown provider type: %+v", raw)
+	}
 }
 
-// Close closes a connection and kills a process of the plugin.
-func (c *Client) Close() {
-	c.provider.Close()
+// newClientConfig returns a plugin client config.
+func newClientConfig(pluginMeta *discovery.PluginMeta) *plugin.ClientConfig {
+	// create a default plugin client config.
+	config := tfplugin.ClientConfig(*pluginMeta)
+	// override config to dual protocols suport
+	config.AllowedProtocols = []plugin.Protocol{
+		plugin.ProtocolNetRPC,
+		plugin.ProtocolGRPC,
+	}
+	config.VersionedPlugins = map[int]plugin.PluginSet{
+		4: {
+			"provider":    &tfplugin.ResourceProviderPlugin{},
+			"provisioner": &tfplugin.ResourceProvisionerPlugin{},
+		},
+		5: {
+			"provider":    &tfplugin.GRPCProviderPlugin{},
+			"provisioner": &tfplugin.GRPCProvisionerPlugin{},
+		},
+	}
+
+	return config
 }
 
 // findPlugin finds a plugin with the name specified in the arguments.
@@ -117,89 +168,4 @@ func pluginDirs() ([]string, error) {
 
 	log.Printf("[DEBUG] plugin dirs: %#v", dirs)
 	return dirs, nil
-}
-
-// getSchema is a helper function to get a schema from provider.
-func (c *Client) getSchema() (providers.GetSchemaResponse, error) {
-	res := c.provider.GetSchema()
-	if res.Diagnostics.HasErrors() {
-		return res, fmt.Errorf("Failed to get schema from provider: %s", res.Diagnostics.Err())
-	}
-
-	return res, nil
-}
-
-// GetProviderSchema returns a type definiton of provider schema.
-func (c *Client) GetProviderSchema() (*Block, error) {
-	res, err := c.getSchema()
-	if err != nil {
-		return nil, err
-	}
-
-	b := NewBlock(res.Provider.Block)
-	return b, nil
-}
-
-// GetResourceTypeSchema returns a type definiton of resource type.
-func (c *Client) GetResourceTypeSchema(resourceType string) (*Block, error) {
-	res, err := c.getSchema()
-	if err != nil {
-		return nil, err
-	}
-
-	schema, ok := res.ResourceTypes[resourceType]
-	if !ok {
-		return nil, fmt.Errorf("Failed to find resource type: %s", resourceType)
-	}
-
-	b := NewBlock(schema.Block)
-	return b, nil
-}
-
-// GetDataSourceSchema returns a type definiton of data source.
-func (c *Client) GetDataSourceSchema(dataSource string) (*Block, error) {
-	res, err := c.getSchema()
-	if err != nil {
-		return nil, err
-	}
-
-	schema, ok := res.DataSources[dataSource]
-	if !ok {
-		return nil, fmt.Errorf("Failed to find data source: %s", dataSource)
-	}
-
-	b := NewBlock(schema.Block)
-	return b, nil
-}
-
-// ResourceTypes returns a list of resource types.
-func (c *Client) ResourceTypes() ([]string, error) {
-	res, err := c.getSchema()
-	if err != nil {
-		return nil, err
-	}
-
-	keys := make([]string, 0, len(res.ResourceTypes))
-	for k := range res.ResourceTypes {
-		keys = append(keys, k)
-	}
-
-	sort.Strings(keys)
-	return keys, nil
-}
-
-// DataSources returns a list of data sources.
-func (c *Client) DataSources() ([]string, error) {
-	res, err := c.getSchema()
-	if err != nil {
-		return nil, err
-	}
-
-	keys := make([]string, 0, len(res.DataSources))
-	for k := range res.DataSources {
-		keys = append(keys, k)
-	}
-
-	sort.Strings(keys)
-	return keys, nil
 }
