@@ -1,16 +1,13 @@
 package tfschema
 
 import (
-	"github.com/hashicorp/terraform/config/configschema"
+	"github.com/hashicorp/terraform/configs/configschema"
 )
 
 // Attribute is wrapper for configschema.Attribute.
 type Attribute struct {
 	// Type is a type of the attribute's value.
-	// Note that Type is not cty.Type
-	// We cannot import github.com/hashicorp/terraform/vendor/github.com/zclconf/go-cty/cty
-	// On the other hand, tfschema does not need a dynamic type.
-	// So, we use a simple representation of type defined in this package.
+	// Note that Type is not cty.Type to customize string representation.
 	Type Type `json:"type"`
 	// Required is a flag whether this attribute is required.
 	Required bool `json:"required"`

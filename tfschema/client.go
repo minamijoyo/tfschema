@@ -6,54 +6,56 @@ import (
 	"log"
 	"os"
 	"path/filepath"
-	"reflect"
 	"runtime"
 	"strings"
 
-	"github.com/hashicorp/terraform/plugin"
 	"github.com/hashicorp/terraform/plugin/discovery"
-	"github.com/hashicorp/terraform/terraform"
 	"github.com/mitchellh/go-homedir"
 )
 
-// Client represents a tfschema Client.
-type Client struct {
-	// provider is a resource provider of Terraform.
-	provider terraform.ResourceProvider
-	// pluginClient is a pointer to plugin client instance.
-	// The type of pluginClient is
-	// *github.com/hashicorp/terraform/vendor/github.com/hashicorp/go-plugin.Client.
-	// But, we cannot import the vendor version of go-plugin using terraform.
-	// So, we store this as interface{}, and use it by reflection.
-	pluginClient interface{}
+// Client represents a set of methods required to get a type definition of
+// schema from Terraform providers.
+// Terraform v0.12+ has a different provider interface from v0.11.
+// This is a compatibility layer for Terraform v0.11/v0.12+.
+type Client interface {
+	// GetProviderSchema returns a type definiton of provider schema.
+	GetProviderSchema() (*Block, error)
+
+	// GetResourceTypeSchema returns a type definiton of resource type.
+	GetResourceTypeSchema(resourceType string) (*Block, error)
+
+	// GetDataSourceSchema returns a type definiton of data source.
+	GetDataSourceSchema(dataSource string) (*Block, error)
+
+	// ResourceTypes returns a list of resource types.
+	ResourceTypes() ([]string, error)
+
+	// DataSources returns a list of data sources.
+	DataSources() ([]string, error)
+
+	// Close closes a connection and kills a process of the plugin.
+	Close()
 }
 
 // NewClient creates a new Client instance.
-func NewClient(providerName string) (*Client, error) {
-	// find a provider plugin
-	pluginMeta, err := findPlugin("provider", providerName)
-	if err != nil {
-		return nil, err
+func NewClient(providerName string) (Client, error) {
+	// First, try to connect by GRPC protocol (version 5)
+	client, err := NewGRPCClient(providerName)
+	if err == nil {
+		return client, nil
 	}
 
-	// initialize a plugin client.
-	pluginClient := plugin.Client(*pluginMeta)
-	rpcClient, err := pluginClient.Client()
+	// If failed, try to connect by NetRPC protocol (version 4)
+	// plugin.ClientConfig.AllowedProtocols has a protocol negotiation feature,
+	// but it doesn't seems to work with old providers.
+	// We guess it is for Terraform v0.11 to connect to the latest provider.
+	// So we implement our own fallback logic here.
+	client, err = NewNetRPCClient(providerName)
 	if err != nil {
-		return nil, fmt.Errorf("Failed to initialize plugin: %s", err)
+		return nil, fmt.Errorf("Failed to NewClient: %s", err)
 	}
 
-	// create a new resource provider.
-	raw, err := rpcClient.Dispense(plugin.ProviderPluginName)
-	if err != nil {
-		return nil, fmt.Errorf("Failed to dispense plugin: %s", err)
-	}
-	provider := raw.(terraform.ResourceProvider)
-
-	return &Client{
-		provider:     provider,
-		pluginClient: pluginClient,
-	}, nil
+	return client, nil
 }
 
 // findPlugin finds a plugin with the name specified in the arguments.
@@ -116,78 +118,4 @@ func pluginDirs() ([]string, error) {
 
 	log.Printf("[DEBUG] plugin dirs: %#v", dirs)
 	return dirs, nil
-}
-
-// GetProviderSchema returns a type definiton of provider schema.
-func (c *Client) GetProviderSchema() (*Block, error) {
-	req := &terraform.ProviderSchemaRequest{
-		ResourceTypes: []string{},
-		DataSources:   []string{},
-	}
-
-	res, err := c.provider.GetSchema(req)
-	if err != nil {
-		return nil, fmt.Errorf("Failed to get schema from provider: %s", err)
-	}
-
-	b := NewBlock(res.Provider)
-	return b, nil
-}
-
-// GetResourceTypeSchema returns a type definiton of resource type.
-func (c *Client) GetResourceTypeSchema(resourceType string) (*Block, error) {
-	req := &terraform.ProviderSchemaRequest{
-		ResourceTypes: []string{resourceType},
-		DataSources:   []string{},
-	}
-
-	res, err := c.provider.GetSchema(req)
-	if err != nil {
-		return nil, fmt.Errorf("Failed to get schema from provider: %s", err)
-	}
-
-	if res.ResourceTypes[resourceType] == nil {
-		return nil, fmt.Errorf("Failed to find resource type: %s", resourceType)
-	}
-
-	b := NewBlock(res.ResourceTypes[resourceType])
-	return b, nil
-}
-
-// GetDataSourceSchema returns a type definiton of data source.
-func (c *Client) GetDataSourceSchema(dataSource string) (*Block, error) {
-	req := &terraform.ProviderSchemaRequest{
-		ResourceTypes: []string{},
-		DataSources:   []string{dataSource},
-	}
-
-	res, err := c.provider.GetSchema(req)
-	if err != nil {
-		return nil, fmt.Errorf("Failed to get schema from provider: %s", err)
-	}
-
-	if res.DataSources[dataSource] == nil {
-		return nil, fmt.Errorf("Failed to find data source: %s", dataSource)
-	}
-
-	b := NewBlock(res.DataSources[dataSource])
-	return b, nil
-}
-
-// Resources returns a list of resource types.
-func (c *Client) Resources() []terraform.ResourceType {
-	return c.provider.Resources()
-}
-
-// DataSources returns a list of data sources.
-func (c *Client) DataSources() []terraform.DataSource {
-	return c.provider.DataSources()
-}
-
-// Kill kills a process of the plugin.
-func (c *Client) Kill() {
-	// We cannot import the vendor version of go-plugin using terraform.
-	// So, we call (*go-plugin.Client).Kill() by reflection here.
-	v := reflect.ValueOf(c.pluginClient).MethodByName("Kill")
-	v.Call([]reflect.Value{})
 }

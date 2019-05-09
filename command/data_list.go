@@ -27,13 +27,12 @@ func (c *DataListCommand) Run(args []string) int {
 		return 1
 	}
 
-	defer client.Kill()
+	defer client.Close()
 
-	res := client.DataSources()
-
-	dataSources := []string{}
-	for _, r := range res {
-		dataSources = append(dataSources, r.Name)
+	dataSources, err := client.DataSources()
+	if err != nil {
+		c.UI.Error(err.Error())
+		return 1
 	}
 
 	c.UI.Output(strings.Join(dataSources, "\n"))

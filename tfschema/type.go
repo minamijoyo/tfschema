@@ -1,22 +1,21 @@
 package tfschema
 
 import (
-	"fmt"
-	"reflect"
 	"strings"
+
+	"github.com/zclconf/go-cty/cty"
 )
 
 // Type is a type of the attribute's value.
 type Type struct {
-	// T is an instance of github.com/hashicorp/terraform/vendor/github.com/zclconf/go-cty.Type
-	// but we cannot import it, so we embed it here with the interface{}.
-	ctyType interface{}
+	// We embed cty.Type to customize string representation.
+	cty.Type
 }
 
 // NewType creates a new Type instance.
-func NewType(t interface{}) *Type {
+func NewType(t cty.Type) *Type {
 	return &Type{
-		ctyType: t,
+		Type: t,
 	}
 }
 
@@ -31,21 +30,9 @@ func (t *Type) MarshalJSON() ([]byte, error) {
 }
 
 // Name returns a name of type.
-// This method depends on the private method of cty.typeImpl.GoString().
-// It's fragile but in the meantime easy to implement.
-// Ideally it should be implemented by looking at the type of cty.typeImpl.
+// This method customize cty.GoString() to make it easy to read.
 func (t *Type) Name() (string, error) {
-	v := reflect.ValueOf(t.ctyType).MethodByName("GoString")
-	if !v.IsValid() {
-		return "", fmt.Errorf("Faild to find GoString(): %#v", t)
-	}
-
-	nv := v.Call([]reflect.Value{})
-	if len(nv) == 0 {
-		return "", fmt.Errorf("Faild to call GoString(): %#v", v)
-	}
-
-	goString := nv[0].String()
+	goString := t.GoString()
 	// drop `cty.` prefix for simplicity. (e.g. cty.String => String)
 	name := strings.Replace(goString, "cty.", "", -1)
 

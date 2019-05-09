@@ -42,7 +42,7 @@ func (c *DataShowCommand) Run(args []string) int {
 		return 1
 	}
 
-	defer client.Kill()
+	defer client.Close()
 
 	block, err := client.GetDataSourceSchema(dataSource)
 	if err != nil {

@@ -2,12 +2,15 @@
 
 A schema inspector for Terraform providers.
 
+NOTICE: The master branch may be broken due to development for Terraform v0.12 support.
+
 # Features
 
 - Get resource type definitions dynamically from Terraform providers via go-plugin protocol.
 - List available resource types.
 - Autocomplete resource types in bash/zsh.
 - Open official provider documents quickly by your system web browser.
+- Terraform v0.11/v0.12 support
 
 ![demo](/images/tfschema-demo.gif)
 

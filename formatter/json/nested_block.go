@@ -1,7 +1,7 @@
 package json
 
 import (
-	"github.com/hashicorp/terraform/config/configschema"
+	"github.com/hashicorp/terraform/configs/configschema"
 	"github.com/minamijoyo/tfschema/tfschema"
 )
 

@@ -12,10 +12,7 @@ type Attribute struct {
 	Name string `json:"name"`
 
 	// Type is a type of the attribute's value.
-	// Note that Type is not cty.Type
-	// We cannot import github.com/hashicorp/terraform/vendor/github.com/zclconf/go-cty/cty
-	// On the other hand, tfschema does not need a dynamic type.
-	// So, we use a simple representation of type defined in tfschema package.
+	// Note that Type is not cty.Type to customize string representation.
 	Type tfschema.Type `json:"type"`
 	// Required is a flag whether this attribute is required.
 	Required bool `json:"required"`

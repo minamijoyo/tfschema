@@ -19,13 +19,11 @@ func (m *Meta) completePredictResourceType() complete.Predictor {
 			return nil
 		}
 
-		defer client.Kill()
+		defer client.Close()
 
-		res := client.Resources()
-
-		resourceTypes := []string{}
-		for _, r := range res {
-			resourceTypes = append(resourceTypes, r.Name)
+		resourceTypes, err := client.ResourceTypes()
+		if err != nil {
+			return nil
 		}
 
 		return resourceTypes
@@ -47,16 +45,13 @@ func (m *Meta) completePredictDataSource() complete.Predictor {
 			return nil
 		}
 
-		defer client.Kill()
+		defer client.Close()
 
-		res := client.DataSources()
-
-		dataSources := []string{}
-		for _, r := range res {
-			dataSources = append(dataSources, r.Name)
+		dataSources, err := client.DataSources()
+		if err != nil {
+			return nil
 		}
 
 		return dataSources
-
 	})
 }
