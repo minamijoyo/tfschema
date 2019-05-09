@@ -13,8 +13,8 @@ import (
 	"github.com/mitchellh/go-homedir"
 )
 
-// Client represents a set of methods required to get resource type definitons
-// from Terraform providers.
+// Client represents a set of methods required to get a type definition of
+// schema from Terraform providers.
 // Terraform v0.12+ has a different provider interface from v0.11.
 // This is a compatibility layer for Terraform v0.11/v0.12+.
 type Client interface {
@@ -48,7 +48,7 @@ func NewClient(providerName string) (Client, error) {
 	// If failed, try to connect by NetRPC protocol (version 4)
 	// plugin.ClientConfig.AllowedProtocols has a protocol negotiation feature,
 	// but it doesn't seems to work with old providers.
-	// We guess it is for Terraform v0.11 to connect to with the latest provider.
+	// We guess it is for Terraform v0.11 to connect to the latest provider.
 	// So we implement our own fallback logic here.
 	client, err = NewNetRPCClient(providerName)
 	if err != nil {
