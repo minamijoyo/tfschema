@@ -2,7 +2,7 @@
 
 A schema inspector for Terraform providers.
 
-NOTICE: The master branch may be broken due to development for Terraform v0.12 support. Use the tf-0.11 branch or a precompiled binary to use with Terraform v0.11.
+NOTICE: The master branch may be broken due to development for Terraform v0.12 support.
 
 # Features
 
@@ -10,6 +10,7 @@ NOTICE: The master branch may be broken due to development for Terraform v0.12 s
 - List available resource types.
 - Autocomplete resource types in bash/zsh.
 - Open official provider documents quickly by your system web browser.
+- Terraform v0.11/v0.12 support
 
 ![demo](/images/tfschema-demo.gif)
 
