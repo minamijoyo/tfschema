@@ -4,6 +4,9 @@ import (
 	"fmt"
 	"sort"
 
+	plugin "github.com/hashicorp/go-plugin"
+	tfplugin "github.com/hashicorp/terraform/plugin"
+	"github.com/hashicorp/terraform/plugin/discovery"
 	"github.com/hashicorp/terraform/providers"
 )
 
@@ -12,6 +15,50 @@ import (
 type GRPCClient struct {
 	// provider is a provider interface of Terraform.
 	provider providers.Interface
+}
+
+// NewGRPCClient creates a new GRPCClient instance.
+func NewGRPCClient(providerName string) (Client, error) {
+	// find a provider plugin
+	pluginMeta, err := findPlugin("provider", providerName)
+	if err != nil {
+		return nil, err
+	}
+
+	// create a plugin client config
+	config := newGRPCClientConfig(pluginMeta)
+
+	// initialize a plugin client.
+	pluginClient := plugin.NewClient(config)
+	client, err := pluginClient.Client()
+	if err != nil {
+		return nil, fmt.Errorf("Failed to initialize GRPC plugin: %s", err)
+	}
+
+	// create a new GRPCProvider.
+	raw, err := client.Dispense(tfplugin.ProviderPluginName)
+	if err != nil {
+		return nil, fmt.Errorf("Failed to dispense GRPC plugin: %s", err)
+	}
+
+	switch provider := raw.(type) {
+	// For Terraform v0.12+
+	case *tfplugin.GRPCProvider:
+		// To clean up the plugin process, we need to explicitly store references.
+		provider.PluginClient = pluginClient
+
+		return &GRPCClient{
+			provider: provider,
+		}, nil
+
+	default:
+		return nil, fmt.Errorf("Failed to type cast GRPC plugin: %+v", raw)
+	}
+}
+
+// newGRPCClientConfig returns a default plugin client config for Terraform v0.12+.
+func newGRPCClientConfig(pluginMeta *discovery.PluginMeta) *plugin.ClientConfig {
+	return tfplugin.ClientConfig(*pluginMeta)
 }
 
 // getSchema is a helper function to get a schema from provider.

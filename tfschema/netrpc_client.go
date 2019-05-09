@@ -2,9 +2,15 @@ package tfschema
 
 import (
 	"fmt"
+	"os"
+	"os/exec"
 	"reflect"
 	"sort"
 
+	"github.com/hashicorp/go-hclog"
+	plugin "github.com/hashicorp/go-plugin"
+	tfplugin "github.com/hashicorp/terraform/plugin"
+	"github.com/hashicorp/terraform/plugin/discovery"
 	"github.com/hashicorp/terraform/terraform"
 )
 
@@ -19,6 +25,68 @@ type NetRPCClient struct {
 	// But, we cannot import the vendor version of go-plugin using terraform.
 	// So, we store this as interface{}, and use it by reflection.
 	pluginClient interface{}
+}
+
+// NewNetRPCClient creates a new NetRPCClient instance.
+func NewNetRPCClient(providerName string) (Client, error) {
+	// find a provider plugin
+	pluginMeta, err := findPlugin("provider", providerName)
+	if err != nil {
+		return nil, err
+	}
+
+	// create a plugin client config
+	config := newNetRPCClientConfig(pluginMeta)
+
+	// initialize a plugin client.
+	pluginClient := plugin.NewClient(config)
+	client, err := pluginClient.Client()
+	if err != nil {
+		return nil, fmt.Errorf("Failed to initialize NetRPC plugin: %s", err)
+	}
+
+	// create a new ResourceProvider.
+	raw, err := client.Dispense(tfplugin.ProviderPluginName)
+	if err != nil {
+		return nil, fmt.Errorf("Failed to dispense NetRPC plugin: %s", err)
+	}
+
+	switch provider := raw.(type) {
+	// For Terraform v0.11
+	case *tfplugin.ResourceProvider:
+		return &NetRPCClient{
+			provider:     provider,
+			pluginClient: pluginClient,
+		}, nil
+
+	default:
+		return nil, fmt.Errorf("Failed to type cast NetRPC plugin r: %+v", raw)
+	}
+}
+
+// newNetRPCClientConfig returns a default plugin client config for Terraform v0.11.
+func newNetRPCClientConfig(pluginMeta *discovery.PluginMeta) *plugin.ClientConfig {
+	// Note that we depends on Terraform v0.12 library
+	// and cannot simply refer the v0.11 default config.
+	// So, we need to reproduce the v0.11 config manually.
+	logger := hclog.New(&hclog.LoggerOptions{
+		Name:   "plugin",
+		Level:  hclog.Trace,
+		Output: os.Stderr,
+	})
+
+	pluginMap := map[string]plugin.Plugin{
+		"provider":    &tfplugin.ResourceProviderPlugin{},
+		"provisioner": &tfplugin.ResourceProvisionerPlugin{},
+	}
+
+	return &plugin.ClientConfig{
+		Cmd:             exec.Command(pluginMeta.Path),
+		HandshakeConfig: tfplugin.Handshake,
+		Managed:         true,
+		Plugins:         pluginMap,
+		Logger:          logger,
+	}
 }
 
 // GetProviderSchema returns a type definiton of provider schema.

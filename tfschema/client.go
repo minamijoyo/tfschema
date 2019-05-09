@@ -9,8 +9,6 @@ import (
 	"runtime"
 	"strings"
 
-	plugin "github.com/hashicorp/go-plugin"
-	tfplugin "github.com/hashicorp/terraform/plugin"
 	"github.com/hashicorp/terraform/plugin/discovery"
 	"github.com/mitchellh/go-homedir"
 )
@@ -41,71 +39,23 @@ type Client interface {
 
 // NewClient creates a new Client instance.
 func NewClient(providerName string) (Client, error) {
-	// find a provider plugin
-	pluginMeta, err := findPlugin("provider", providerName)
+	// First, try to connect by GRPC protocol (version 5)
+	client, err := NewGRPCClient(providerName)
+	if err == nil {
+		return client, nil
+	}
+
+	// If failed, try to connect by NetRPC protocol (version 4)
+	// plugin.ClientConfig.AllowedProtocols has a protocol negotiation feature,
+	// but it doesn't seems to work with old providers.
+	// We guess it is for Terraform v0.11 to connect to with the latest provider.
+	// So we implement our own fallback logic here.
+	client, err = NewNetRPCClient(providerName)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("Failed to NewClient: %s", err)
 	}
 
-	// create a plugin client config
-	config := newClientConfig(pluginMeta)
-
-	// initialize a plugin client.
-	pluginClient := plugin.NewClient(config)
-	client, err := pluginClient.Client()
-	if err != nil {
-		return nil, fmt.Errorf("Failed to initialize plugin: %s", err)
-	}
-
-	// create a new resource provider.
-	raw, err := client.Dispense(tfplugin.ProviderPluginName)
-	if err != nil {
-		return nil, fmt.Errorf("Failed to dispense plugin: %s", err)
-	}
-
-	switch provider := raw.(type) {
-	// For Terraform v0.11
-	case *tfplugin.ResourceProvider:
-		return &NetRPCClient{
-			provider:     provider,
-			pluginClient: pluginClient,
-		}, nil
-
-	// For Terraform v0.12+
-	case *tfplugin.GRPCProvider:
-		// To clean up the plugin process, we need to explicitly store references.
-		provider.PluginClient = pluginClient
-
-		return &GRPCClient{
-			provider: provider,
-		}, nil
-
-	default:
-		return nil, fmt.Errorf("Failed to type cast. unknown provider type: %+v", raw)
-	}
-}
-
-// newClientConfig returns a plugin client config.
-func newClientConfig(pluginMeta *discovery.PluginMeta) *plugin.ClientConfig {
-	// create a default plugin client config.
-	config := tfplugin.ClientConfig(*pluginMeta)
-	// override config to dual protocols suport
-	config.AllowedProtocols = []plugin.Protocol{
-		plugin.ProtocolNetRPC,
-		plugin.ProtocolGRPC,
-	}
-	config.VersionedPlugins = map[int]plugin.PluginSet{
-		4: {
-			"provider":    &tfplugin.ResourceProviderPlugin{},
-			"provisioner": &tfplugin.ResourceProvisionerPlugin{},
-		},
-		5: {
-			"provider":    &tfplugin.GRPCProviderPlugin{},
-			"provisioner": &tfplugin.GRPCProvisionerPlugin{},
-		},
-	}
-
-	return config
+	return client, nil
 }
 
 // findPlugin finds a plugin with the name specified in the arguments.
