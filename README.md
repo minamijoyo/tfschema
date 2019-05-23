@@ -22,53 +22,29 @@ $ terraform init
 ```
 
 ```
-$ tfschema resource list aws | grep aws_security
-aws_security_group
-aws_security_group_rule
+$ tfschema resource list aws | grep aws_iam_user
+aws_iam_user
+aws_iam_user_group_membership
+aws_iam_user_login_profile
+aws_iam_user_policy
+aws_iam_user_policy_attachment
+aws_iam_user_ssh_key
 ```
 
 ```
-$ tfschema resource show aws_security_group
-+------------------------+-------------+----------+----------+----------+-----------+
-| ATTRIBUTE              | TYPE        | REQUIRED | OPTIONAL | COMPUTED | SENSITIVE |
-+------------------------+-------------+----------+----------+----------+-----------+
-| description            | String      | false    | true     | false    | false     |
-| name                   | String      | false    | true     | true     | false     |
-| name_prefix            | String      | false    | true     | false    | false     |
-| owner_id               | String      | false    | false    | true     | false     |
-| revoke_rules_on_delete | Bool        | false    | true     | false    | false     |
-| tags                   | Map(String) | false    | true     | false    | false     |
-| vpc_id                 | String      | false    | true     | true     | false     |
-+------------------------+-------------+----------+----------+----------+-----------+
-
-block_type: egress, nesting: NestingSet, min_items: 0, max_items: 0
-+------------------+--------------+----------+----------+----------+-----------+
-| ATTRIBUTE        | TYPE         | REQUIRED | OPTIONAL | COMPUTED | SENSITIVE |
-+------------------+--------------+----------+----------+----------+-----------+
-| cidr_blocks      | List(String) | false    | true     | false    | false     |
-| description      | String       | false    | true     | false    | false     |
-| from_port        | Number       | true     | false    | false    | false     |
-| ipv6_cidr_blocks | List(String) | false    | true     | false    | false     |
-| prefix_list_ids  | List(String) | false    | true     | false    | false     |
-| protocol         | String       | true     | false    | false    | false     |
-| security_groups  | Set(String)  | false    | true     | false    | false     |
-| self             | Bool         | false    | true     | false    | false     |
-| to_port          | Number       | true     | false    | false    | false     |
-+------------------+--------------+----------+----------+----------+-----------+
-
-block_type: ingress, nesting: NestingSet, min_items: 0, max_items: 0
-+------------------+--------------+----------+----------+----------+-----------+
-| ATTRIBUTE        | TYPE         | REQUIRED | OPTIONAL | COMPUTED | SENSITIVE |
-+------------------+--------------+----------+----------+----------+-----------+
-| cidr_blocks      | List(String) | false    | true     | false    | false     |
-| description      | String       | false    | true     | false    | false     |
-| from_port        | Number       | true     | false    | false    | false     |
-| ipv6_cidr_blocks | List(String) | false    | true     | false    | false     |
-| protocol         | String       | true     | false    | false    | false     |
-| security_groups  | Set(String)  | false    | true     | false    | false     |
-| self             | Bool         | false    | true     | false    | false     |
-| to_port          | Number       | true     | false    | false    | false     |
-+------------------+--------------+----------+----------+----------+-----------+
+$ tfschema resource show aws_iam_user
++----------------------+-------------+----------+----------+----------+-----------+
+| ATTRIBUTE            | TYPE        | REQUIRED | OPTIONAL | COMPUTED | SENSITIVE |
++----------------------+-------------+----------+----------+----------+-----------+
+| arn                  | string      | false    | false    | true     | false     |
+| force_destroy        | bool        | false    | true     | false    | false     |
+| id                   | string      | false    | true     | true     | false     |
+| name                 | string      | true     | false    | false    | false     |
+| path                 | string      | false    | true     | false    | false     |
+| permissions_boundary | string      | false    | true     | false    | false     |
+| tags                 | map(string) | false    | true     | false    | false     |
+| unique_id            | string      | false    | false    | true     | false     |
++----------------------+-------------+----------+----------+----------+-----------+
 ```
 
 # Install
