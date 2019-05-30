@@ -7,6 +7,7 @@ require (
 	github.com/goreleaser/goreleaser v0.106.0
 	github.com/hashicorp/go-hclog v0.0.0-20181001195459-61d530d6c27f
 	github.com/hashicorp/go-plugin v1.0.1-0.20190430211030-5692942914bb
+	github.com/hashicorp/hcl2 v0.0.0-20190515223218-4b22149b7cef
 	github.com/hashicorp/logutils v1.0.0
 	github.com/hashicorp/terraform v0.12.0
 	github.com/mitchellh/cli v1.0.0

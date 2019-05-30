@@ -64,10 +64,7 @@ func renderAttributes(b *Block) (string, error) {
 
 	for _, k := range keys {
 		v := b.Attributes[k]
-		typeName, err := v.Type.Name()
-		if err != nil {
-			return "", err
-		}
+		typeName := v.Type.Name()
 
 		row := []string{
 			k,
