@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"sort"
 	"strconv"
+	"strings"
 
 	"github.com/minamijoyo/tfschema/tfschema"
 	"github.com/olekukonko/tablewriter"
@@ -68,7 +69,7 @@ func renderAttributes(b *Block) (string, error) {
 
 		row := []string{
 			k,
-			typeName,
+			formatTypeName(typeName),
 			strconv.FormatBool(v.Required),
 			strconv.FormatBool(v.Optional),
 			strconv.FormatBool(v.Computed),
@@ -80,6 +81,17 @@ func renderAttributes(b *Block) (string, error) {
 	table.Render()
 
 	return buf.String(), nil
+}
+
+// formatTypeName returns a string formatted type name.
+// If a type name contains object type, its length may be long and it is hard to read.
+// Add a space to the type name so that tablewriter can break it into lines.
+func formatTypeName(name string) string {
+	return strings.Replace(
+		strings.Replace(
+			strings.Replace(name, ",", ", ", -1),
+			"{", "{ ", -1),
+		"}", " }", -1)
 }
 
 // renderBlockTypes returns a formatted string in table format for BlockTypes.
