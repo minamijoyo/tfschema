@@ -40,6 +40,7 @@ type Client interface {
 // NewClient creates a new Client instance.
 func NewClient(providerName string) (Client, error) {
 	// First, try to connect by GRPC protocol (version 5)
+	log.Println("[DEBUG] try to connect by GRPC protocol (version 5)")
 	client, err := NewGRPCClient(providerName)
 	if err == nil {
 		return client, nil
@@ -50,6 +51,7 @@ func NewClient(providerName string) (Client, error) {
 	// but it doesn't seems to work with old providers.
 	// We guess it is for Terraform v0.11 to connect to the latest provider.
 	// So we implement our own fallback logic here.
+	log.Println("[DEBUG] try to connect by NetRPC protocol (version 4)")
 	client, err = NewNetRPCClient(providerName)
 	if err != nil {
 		return nil, fmt.Errorf("Failed to NewClient: %s", err)
@@ -78,29 +80,54 @@ func findPlugin(pluginType string, pluginName string) (*discovery.PluginMeta, er
 }
 
 // pluginDirs returns a list of directories to find plugin.
-// This is almost the same as Terraform, but not exactly the same.
+// It finds plugins installed by terraform init.
+// Note that it doesn't have exactly the same behavior of Terraform
+// because of some reasons:
+// - Support multiple Terraform versions
+// - Can't import internal packages of Terraform and it's too complicated to support
+// - For debug
+// For more details, read inline comments.
 func pluginDirs() ([]string, error) {
 	dirs := []string{}
 
 	// current directory
 	dirs = append(dirs, ".")
 
-	// same directory as this executable
+	// same directory as this executable (not terraform)
 	exePath, err := os.Executable()
 	if err != nil {
 		return []string{}, fmt.Errorf("Failed to get executable path: %s", err)
 	}
 	dirs = append(dirs, filepath.Dir(exePath))
 
-	// user vendor directory
+	// user vendor directory for Terraform < v0.13.
+	// For Terraform v0.13, it is still supported but considered as legacy
+	// because now we can download third-party providers from Terraform Registry.
 	arch := runtime.GOOS + "_" + runtime.GOARCH
 	vendorDir := filepath.Join("terraform.d", "plugins", arch)
 	dirs = append(dirs, vendorDir)
 
-	// auto installed directory
-	// This does not take into account overriding the data directory.
-	autoInstalledDir := filepath.Join(".terraform", "plugins", arch)
-	dirs = append(dirs, autoInstalledDir)
+	// auto installed directory for Terraform v0.13+
+	// The path contains a fully qualified provider name and version.
+	// .terraform/plugins/registry.terraform.io/hashicorp/aws/2.67.0/darwin_amd64
+	// So we peek a lock file (.terraform/plugins/selections.json) and build a
+	// path of plugin directories.
+	// We don't check the `plugin_cache_dir` setting in the Terraform CLI
+	// configuration or the TF_PLUGIN_CACHE_DIR environmental variable here,
+	// https://github.com/hashicorp/terraform/blob/v0.13.0-beta2/website/docs/commands/cli-config.html.markdown#provider-plugin-cache
+	// but even if it is configured, the selection file is stored under
+	// .terraform/plugins directory and provider binaries are symlinked to the
+	// cache directory when running terraform init.
+	autoInstalledDirs, err := newSelectionFile(filepath.Join(".terraform", "plugins", "selections.json")).pluginDirs()
+	if err != nil {
+		return []string{}, err
+	}
+
+	dirs = append(dirs, autoInstalledDirs...)
+
+	// auto installed directory for Terraform < v0.13
+	legacyAutoInstalledDir := filepath.Join(".terraform", "plugins", arch)
+	dirs = append(dirs, legacyAutoInstalledDir)
 
 	// global plugin directory
 	homeDir, err := homedir.Dir()
@@ -110,6 +137,25 @@ func pluginDirs() ([]string, error) {
 	configDir := filepath.Join(homeDir, ".terraform.d", "plugins")
 	dirs = append(dirs, configDir)
 	dirs = append(dirs, filepath.Join(configDir, arch))
+
+	// We don't check a provider_installation block in the Terraform CLI configuration.
+	// Because it needs parse HCL and a lot of considerations to implement it
+	// precisely such as include/exclude rules and a packed layout.
+	// https://github.com/hashicorp/terraform/blob/v0.13.0-beta2/website/docs/commands/cli-config.html.markdown#explicit-installation-method-configuration
+
+	// For completeness, we also should check implied local mirror directories.
+	// https://github.com/hashicorp/terraform/blob/v0.13.0-beta2/website/docs/commands/cli-config.html.markdown#implied-local-mirror-directories
+	// The set of directies depends on the operating system where you are running Terraform.
+	// but we cannot enough test for them without test environments,
+	// so we intentionally don't support it for now.
+	// - Windows: %APPDATA%/HashiCorp/Terraform/plugins
+	// - Mac OS X: ~/Library/Application Support/io.terraform/plugins and
+	//   /Library/Application Support/io.terraform/plugins
+	// - Linux and other Unix-like systems: Terraform implements the XDG Base
+	//   Directory specification and appends terraform/plugins to all of the
+	//   specified data directories. Without any XDG environment variables set,
+	//   Terraform will use ~/.local/share/terraform/plugins,
+	//   /usr/local/share/terraform/plugins, and /usr/share/terraform/plugins.
 
 	// GOPATH
 	// This is not included in the Terraform, but for convenience.
