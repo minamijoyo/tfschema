@@ -38,10 +38,10 @@ type Client interface {
 }
 
 // NewClient creates a new Client instance.
-func NewClient(providerName string) (Client, error) {
+func NewClient(providerName string, pluginDirectories []string) (Client, error) {
 	// First, try to connect by GRPC protocol (version 5)
 	log.Println("[DEBUG] try to connect by GRPC protocol (version 5)")
-	client, err := NewGRPCClient(providerName)
+	client, err := NewGRPCClient(providerName, pluginDirectories)
 	if err == nil {
 		return client, nil
 	}
@@ -52,7 +52,7 @@ func NewClient(providerName string) (Client, error) {
 	// We guess it is for Terraform v0.11 to connect to the latest provider.
 	// So we implement our own fallback logic here.
 	log.Println("[DEBUG] try to connect by NetRPC protocol (version 4)")
-	client, err = NewNetRPCClient(providerName)
+	client, err = NewNetRPCClient(providerName, pluginDirectories)
 	if err != nil {
 		return nil, fmt.Errorf("Failed to NewClient: %s", err)
 	}
@@ -61,8 +61,8 @@ func NewClient(providerName string) (Client, error) {
 }
 
 // findPlugin finds a plugin with the name specified in the arguments.
-func findPlugin(pluginType string, pluginName string) (*discovery.PluginMeta, error) {
-	dirs, err := pluginDirs()
+func findPlugin(pluginType string, pluginName string, pluginDirectories []string) (*discovery.PluginMeta, error) {
+	dirs, err := pluginDirs(pluginDirectories)
 	if err != nil {
 		return nil, err
 	}
@@ -87,8 +87,12 @@ func findPlugin(pluginType string, pluginName string) (*discovery.PluginMeta, er
 // - Can't import internal packages of Terraform and it's too complicated to support
 // - For debug
 // For more details, read inline comments.
-func pluginDirs() ([]string, error) {
+func pluginDirs(additionalPluginDirectories []string) ([]string, error) {
 	dirs := []string{}
+
+	if additionalPluginDirectories != nil {
+		dirs = append(dirs, additionalPluginDirectories...)
+	}
 
 	// current directory
 	dirs = append(dirs, ".")

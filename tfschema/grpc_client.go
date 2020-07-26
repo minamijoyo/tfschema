@@ -18,9 +18,9 @@ type GRPCClient struct {
 }
 
 // NewGRPCClient creates a new GRPCClient instance.
-func NewGRPCClient(providerName string) (Client, error) {
+func NewGRPCClient(providerName string, pluginDirectories []string) (Client, error) {
 	// find a provider plugin
-	pluginMeta, err := findPlugin("provider", providerName)
+	pluginMeta, err := findPlugin("provider", providerName, pluginDirectories)
 	if err != nil {
 		return nil, err
 	}

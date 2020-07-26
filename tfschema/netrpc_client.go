@@ -28,9 +28,9 @@ type NetRPCClient struct {
 }
 
 // NewNetRPCClient creates a new NetRPCClient instance.
-func NewNetRPCClient(providerName string) (Client, error) {
+func NewNetRPCClient(providerName string, pluginDirectories []string) (Client, error) {
 	// find a provider plugin
-	pluginMeta, err := findPlugin("provider", providerName)
+	pluginMeta, err := findPlugin("provider", providerName, pluginDirectories)
 	if err != nil {
 		return nil, err
 	}
