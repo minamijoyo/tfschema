@@ -88,7 +88,7 @@ The tfschema requires the provider's dependency library version to:
 - zclconf/go-cty >= 14e23b14828dd12cc7ae0956813c7e91a196e68f (2018/01/06)
 
 # Rules of finding provider's binary
-When `terraform init` command is executed, provider's binary is installed under the auto installed directory ( .terraform/plugins/`<OS>_<ARCH>` ) by default.
+When `terraform init` command is executed, provider's binary is installed under the auto installed directory ( .terraform/plugins/`<SOURCE ADDRESS>`/`<VERSION>`/`<OS>_<ARCH>` ) by default.
 The tfschema can use the same provider's binary as terraform uses, so you can run `tfschema` command in the same directory where you run the `terraform` command.
 
 The tfschema finds provider's binary under the following directories.
