@@ -8,7 +8,7 @@ A schema inspector for Terraform providers.
 - List available resource types.
 - Autocomplete resource types in bash/zsh.
 - Open official provider documents quickly by your system web browser.
-- Terraform v0.11/v0.12 support
+- Terraform v0.13 support (minimum requirements: Terraform >= v0.11)
 
 ![demo](/images/tfschema-demo.gif)
 
@@ -57,12 +57,11 @@ $ brew install minamijoyo/tfschema/tfschema
 
 or
 
-If you have Go 1.12+ development environment:
+If you have Go 1.14+ development environment:
 
 ```bash
 $ git clone https://github.com/minamijoyo/tfschema
 $ cd tfschema
-$ export GO111MODULE=on
 $ go install
 ```
 
@@ -80,7 +79,8 @@ https://github.com/minamijoyo/tfschema/releases
 
 ## Other providers
 Your provider may or may not support a required API.
-The tfschema depends on the Terraform's GetSchema API, and currently some providers do not work unless you patch the provider.
+If your provider support Terraform >= v0.11, it should work.
+Strictly speaking, the tfschema depends on the Terraform's GetSchema API.
 
 The tfschema requires the provider's dependency library version to:
 
@@ -88,23 +88,28 @@ The tfschema requires the provider's dependency library version to:
 - zclconf/go-cty >= 14e23b14828dd12cc7ae0956813c7e91a196e68f (2018/01/06)
 
 # Rules of finding provider's binary
-When `terraform init` command is executed, provider's binary is installed under the auto installed directory ( .terraform/plugins/`<OS>_<ARCH>` ) by default.
+When `terraform init` command is executed, provider's binary is installed under the auto installed directory ( .terraform/plugins/`<SOURCE ADDRESS>`/`<VERSION>`/`<OS>_<ARCH>` ) by default.
 The tfschema can use the same provider's binary as terraform uses, so you can run `tfschema` command in the same directory where you run the `terraform` command.
 
-If your code base does not use the supported version of the provider yet, you can also use tfschema with other provider's binary installed in different directories.
-
 The tfschema finds provider's binary under the following directories.
-This is almost the same as terraform, but not exactly the same.
 
 1. current directory
 2. same directory as `tfschema` executable
 3. user vendor directory ( terraform.d/plugins/`<OS>_<ARCH>` )
-4. auto installed directory ( .terraform/plugins/`<OS>_<ARCH>` )
-5. global plugin directory ( $HOME/.terraform.d/plugins )
-6. global plugin directory with os and arch ( $HOME/.terraform.d/plugins/`<OS>_<ARCH>` )
-7. gopath ( $GOPATH/bin )
+4. auto installed directory ( .terraform/plugins/`<SOURCE ADDRESS>`/`<VERSION>`/`<OS>_<ARCH>` )
+5. legacy auto installed directory ( .terraform/plugins/`<OS>_<ARCH>` )
+6. global plugin directory ( $HOME/.terraform.d/plugins )
+7. global plugin directory with os and arch ( $HOME/.terraform.d/plugins/`<OS>_<ARCH>` )
+8. gopath ( $GOPATH/bin )
 
-Note: if you are Mac OSX user, `<OS>_<ARCH>` is `darwin_amd64`.
+If you are Mac OSX user, `<OS>_<ARCH>` is `darwin_amd64`.
+The `<SOURCE ADDRESS>` is a fully qualified provider name in Terraform 0.13+. (e.g. `registry.terraform.io/hashicorp/aws`)
+
+Note that it doesn't have exactly the same behavior of Terraform because of some reasons:
+
+- Support multiple Terraform versions
+- Can't import internal packages of Terraform and it's too complicated to support
+- For debug
 
 # Autocomplete
 
