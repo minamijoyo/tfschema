@@ -1,6 +1,6 @@
 module github.com/minamijoyo/tfschema
 
-go 1.14
+go 1.15
 
 require (
 	github.com/goreleaser/goreleaser v0.106.0
