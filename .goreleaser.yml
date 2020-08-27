@@ -25,6 +25,7 @@ brews:
       email: minamijoyo@gmail.com
     homepage: https://github.com/minamijoyo/tfschema
     description: "A schema inspector for Terraform providers."
+    skip_upload: auto
     test: |
       system "#{bin}/tfschema --version"
     install: |
