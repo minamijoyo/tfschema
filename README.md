@@ -1,4 +1,7 @@
 # tfschema
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
+[![GitHub release](https://img.shields.io/github/release/minamijoyo/tfschema.svg)](https://github.com/minamijoyo/tfschema/releases/latest)
+[![GoDoc](https://godoc.org/github.com/minamijoyo/tfschema/tfschema?status.svg)](https://godoc.org/github.com/minamijoyo/tfschema)
 
 A schema inspector for Terraform providers.
 
