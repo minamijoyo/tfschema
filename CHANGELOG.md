@@ -1,3 +1,10 @@
+## 0.4.1 (2020/08/27)
+
+ENHANCEMENTS:
+
+* Setup CI with GitHub Actions ([#23](https://github.com/minamijoyo/tfschema/pull/23))
+* Setup CD with goreleaser and GitHub Actions ([#24](https://github.com/minamijoyo/tfschema/pull/24))
+
 ## 0.4.0 (2020/08/13)
 
 INCOMPATIBILITIES AND NOTES:
