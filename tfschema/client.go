@@ -90,8 +90,13 @@ func findPlugin(pluginType string, pluginName string) (*discovery.PluginMeta, er
 func pluginDirs() ([]string, error) {
 	dirs := []string{}
 
+	rootDirectory := os.Getenv("TFSCHEMA_ROOT_DIRECTORY")
+	if rootDirectory == "" {
+		rootDirectory = "."
+	}
+
 	// current directory
-	dirs = append(dirs, ".")
+	dirs = append(dirs, rootDirectory)
 
 	// same directory as this executable (not terraform)
 	exePath, err := os.Executable()
@@ -104,7 +109,7 @@ func pluginDirs() ([]string, error) {
 	// For Terraform v0.13, it is still supported but considered as legacy
 	// because now we can download third-party providers from Terraform Registry.
 	arch := runtime.GOOS + "_" + runtime.GOARCH
-	vendorDir := filepath.Join("terraform.d", "plugins", arch)
+	vendorDir := filepath.Join(rootDirectory, "terraform.d", "plugins", arch)
 	dirs = append(dirs, vendorDir)
 
 	// auto installed directory for Terraform v0.13+
@@ -118,7 +123,7 @@ func pluginDirs() ([]string, error) {
 	// but even if it is configured, the selection file is stored under
 	// .terraform/plugins directory and provider binaries are symlinked to the
 	// cache directory when running terraform init.
-	autoInstalledDirs, err := newSelectionFile(filepath.Join(".terraform", "plugins", "selections.json")).pluginDirs()
+	autoInstalledDirs, err := newSelectionFile(filepath.Join(rootDirectory, ".terraform", "plugins", "selections.json")).pluginDirs()
 	if err != nil {
 		return []string{}, err
 	}
@@ -126,7 +131,7 @@ func pluginDirs() ([]string, error) {
 	dirs = append(dirs, autoInstalledDirs...)
 
 	// auto installed directory for Terraform < v0.13
-	legacyAutoInstalledDir := filepath.Join(".terraform", "plugins", arch)
+	legacyAutoInstalledDir := filepath.Join(rootDirectory, ".terraform", "plugins", arch)
 	dirs = append(dirs, legacyAutoInstalledDir)
 
 	// global plugin directory
