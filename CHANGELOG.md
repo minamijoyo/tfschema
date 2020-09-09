@@ -1,3 +1,12 @@
+## 0.5.0 (2020/09/09)
+
+INCOMPATIBILITIES AND NOTES:
+
+* Allow root directory for plugins to be set when using NewClient ([#25](https://github.com/minamijoyo/tfschema/pull/25))
+
+For CLI users, there is no breaking changes and you can now set a terraform root module directory via `TFSCHEMA_ROOT_DIR` environment variable.
+For library users, the method signatures of `NewClient`, `NewGRPCClient` and `NewNetRPCClient` in `tfschema` package have been changed and now require a new `Option` struct.
+
 ## 0.4.1 (2020/08/27)
 
 ENHANCEMENTS:
