@@ -37,11 +37,16 @@ type Client interface {
 	Close()
 }
 
+// Option is an options struct for extra options for NewClient
+type Option struct {
+	RootDir string
+}
+
 // NewClient creates a new Client instance.
-func NewClient(providerName string) (Client, error) {
+func NewClient(providerName string, options Option) (Client, error) {
 	// First, try to connect by GRPC protocol (version 5)
 	log.Println("[DEBUG] try to connect by GRPC protocol (version 5)")
-	client, err := NewGRPCClient(providerName)
+	client, err := NewGRPCClient(providerName, options)
 	if err == nil {
 		return client, nil
 	}
@@ -52,7 +57,7 @@ func NewClient(providerName string) (Client, error) {
 	// We guess it is for Terraform v0.11 to connect to the latest provider.
 	// So we implement our own fallback logic here.
 	log.Println("[DEBUG] try to connect by NetRPC protocol (version 4)")
-	client, err = NewNetRPCClient(providerName)
+	client, err = NewNetRPCClient(providerName, options)
 	if err != nil {
 		return nil, fmt.Errorf("Failed to NewClient: %s", err)
 	}
@@ -61,8 +66,8 @@ func NewClient(providerName string) (Client, error) {
 }
 
 // findPlugin finds a plugin with the name specified in the arguments.
-func findPlugin(pluginType string, pluginName string) (*discovery.PluginMeta, error) {
-	dirs, err := pluginDirs()
+func findPlugin(pluginType string, pluginName string, rootDir string) (*discovery.PluginMeta, error) {
+	dirs, err := pluginDirs(rootDir)
 	if err != nil {
 		return nil, err
 	}
@@ -87,11 +92,11 @@ func findPlugin(pluginType string, pluginName string) (*discovery.PluginMeta, er
 // - Can't import internal packages of Terraform and it's too complicated to support
 // - For debug
 // For more details, read inline comments.
-func pluginDirs() ([]string, error) {
+func pluginDirs(rootDir string) ([]string, error) {
 	dirs := []string{}
 
 	// current directory
-	dirs = append(dirs, ".")
+	dirs = append(dirs, rootDir)
 
 	// same directory as this executable (not terraform)
 	exePath, err := os.Executable()
@@ -104,7 +109,7 @@ func pluginDirs() ([]string, error) {
 	// For Terraform v0.13, it is still supported but considered as legacy
 	// because now we can download third-party providers from Terraform Registry.
 	arch := runtime.GOOS + "_" + runtime.GOARCH
-	vendorDir := filepath.Join("terraform.d", "plugins", arch)
+	vendorDir := filepath.Join(rootDir, "terraform.d", "plugins", arch)
 	dirs = append(dirs, vendorDir)
 
 	// auto installed directory for Terraform v0.13+
@@ -118,7 +123,7 @@ func pluginDirs() ([]string, error) {
 	// but even if it is configured, the selection file is stored under
 	// .terraform/plugins directory and provider binaries are symlinked to the
 	// cache directory when running terraform init.
-	autoInstalledDirs, err := newSelectionFile(filepath.Join(".terraform", "plugins", "selections.json")).pluginDirs()
+	autoInstalledDirs, err := newSelectionFile(filepath.Join(rootDir, ".terraform", "plugins", "selections.json")).pluginDirs()
 	if err != nil {
 		return []string{}, err
 	}
@@ -126,7 +131,7 @@ func pluginDirs() ([]string, error) {
 	dirs = append(dirs, autoInstalledDirs...)
 
 	// auto installed directory for Terraform < v0.13
-	legacyAutoInstalledDir := filepath.Join(".terraform", "plugins", arch)
+	legacyAutoInstalledDir := filepath.Join(rootDir, ".terraform", "plugins", arch)
 	dirs = append(dirs, legacyAutoInstalledDir)
 
 	// global plugin directory

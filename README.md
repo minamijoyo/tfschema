@@ -92,15 +92,16 @@ The tfschema requires the provider's dependency library version to:
 
 # Rules of finding provider's binary
 When `terraform init` command is executed, provider's binary is installed under the auto installed directory ( .terraform/plugins/`<SOURCE ADDRESS>`/`<VERSION>`/`<OS>_<ARCH>` ) by default.
-The tfschema can use the same provider's binary as terraform uses, so you can run `tfschema` command in the same directory where you run the `terraform` command.
+The tfschema can use the same provider's binary as terraform uses, so you can run `tfschema` command in the same directory where you run the `terraform` command
+Alternatively, you can set the environment variable `$TFSCHEMA_ROOT_DIR` to be this directory. If `$TFSCHEMA_ROOT_DIR` is not set, it will default to the current directory
 
 The tfschema finds provider's binary under the following directories.
 
-1. current directory
+1. `$TFSCHEMA_ROOT_DIR`
 2. same directory as `tfschema` executable
-3. user vendor directory ( terraform.d/plugins/`<OS>_<ARCH>` )
-4. auto installed directory ( .terraform/plugins/`<SOURCE ADDRESS>`/`<VERSION>`/`<OS>_<ARCH>` )
-5. legacy auto installed directory ( .terraform/plugins/`<OS>_<ARCH>` )
+3. user vendor directory ( `$TFSCHEMA_ROOT_DIR`/terraform.d/plugins/`<OS>_<ARCH>` )
+4. auto installed directory ( `$TFSCHEMA_ROOT_DIR`/.terraform/plugins/`<SOURCE ADDRESS>`/`<VERSION>`/`<OS>_<ARCH>` )
+5. legacy auto installed directory ( `$TFSCHEMA_ROOT_DIR`/.terraform/plugins/`<OS>_<ARCH>` )
 6. global plugin directory ( $HOME/.terraform.d/plugins )
 7. global plugin directory with os and arch ( $HOME/.terraform.d/plugins/`<OS>_<ARCH>` )
 8. gopath ( $GOPATH/bin )

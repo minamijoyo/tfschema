@@ -1,7 +1,6 @@
 package command
 
 import (
-	"github.com/minamijoyo/tfschema/tfschema"
 	"github.com/posener/complete"
 )
 
@@ -14,7 +13,7 @@ func (m *Meta) completePredictResourceType() complete.Predictor {
 			return nil
 		}
 
-		client, err := tfschema.NewClient(providerName)
+		client, err := NewDefaultClient(providerName)
 		if err != nil {
 			return nil
 		}
@@ -40,7 +39,7 @@ func (m *Meta) completePredictDataSource() complete.Predictor {
 			return nil
 		}
 
-		client, err := tfschema.NewClient(providerName)
+		client, err := NewDefaultClient(providerName)
 		if err != nil {
 			return nil
 		}
