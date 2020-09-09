@@ -90,7 +90,7 @@ func findPlugin(pluginType string, pluginName string) (*discovery.PluginMeta, er
 func pluginDirs() ([]string, error) {
 	dirs := []string{}
 
-	rootDirectory := os.Getenv("TFSCHEMA_ROOT_DIRECTORY")
+	rootDirectory := os.Getenv("TFSCHEMA_ROOT_DIR")
 	if rootDirectory == "" {
 		rootDirectory = "."
 	}
