@@ -4,7 +4,6 @@ import (
 	"flag"
 	"strings"
 
-	"github.com/minamijoyo/tfschema/tfschema"
 	"github.com/posener/complete"
 )
 
@@ -36,7 +35,7 @@ func (c *ResourceShowCommand) Run(args []string) int {
 		return 1
 	}
 
-	client, err := tfschema.NewClient(providerName)
+	client, err := NewDefaultClient(providerName)
 	if err != nil {
 		c.UI.Error(err.Error())
 		return 1

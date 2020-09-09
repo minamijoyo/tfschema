@@ -2,8 +2,6 @@ package command
 
 import (
 	"strings"
-
-	"github.com/minamijoyo/tfschema/tfschema"
 )
 
 // DataListCommand is a command which lists data sources.
@@ -21,7 +19,7 @@ func (c *DataListCommand) Run(args []string) int {
 
 	providerName := args[0]
 
-	client, err := tfschema.NewClient(providerName)
+	client, err := NewDefaultClient(providerName)
 	if err != nil {
 		c.UI.Error(err.Error())
 		return 1

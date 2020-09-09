@@ -3,8 +3,6 @@ package command
 import (
 	"flag"
 	"strings"
-
-	"github.com/minamijoyo/tfschema/tfschema"
 )
 
 // ProviderShowCommand is a command which shows a type definition of provider.
@@ -30,7 +28,7 @@ func (c *ProviderShowCommand) Run(args []string) int {
 
 	providerName := cmdFlags.Args()[0]
 
-	client, err := tfschema.NewClient(providerName)
+	client, err := NewDefaultClient(providerName)
 	if err != nil {
 		c.UI.Error(err.Error())
 		return 1
