@@ -27,6 +27,9 @@ func NewGRPCClient(providerName string, options Option) (Client, error) {
 
 	// create a plugin client config
 	config := newGRPCClientConfig(pluginMeta)
+	if options.Logger != nil {
+		config.Logger = options.Logger
+	}
 
 	// initialize a plugin client.
 	pluginClient := plugin.NewClient(config)

@@ -9,6 +9,7 @@ import (
 	"runtime"
 	"strings"
 
+	"github.com/hashicorp/go-hclog"
 	"github.com/hashicorp/terraform/plugin/discovery"
 	"github.com/mitchellh/go-homedir"
 )
@@ -40,6 +41,7 @@ type Client interface {
 // Option is an options struct for extra options for NewClient
 type Option struct {
 	RootDir string
+	Logger  hclog.Logger
 }
 
 // NewClient creates a new Client instance.
