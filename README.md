@@ -11,7 +11,7 @@ A schema inspector for Terraform providers.
 - List available resource types.
 - Autocomplete resource types in bash/zsh.
 - Open official provider documents quickly by your system web browser.
-- Terraform v0.13 support (minimum requirements: Terraform >= v0.11)
+- Terraform v0.14 support (minimum requirements: Terraform >= v0.11)
 
 ![demo](/images/tfschema-demo.gif)
 
@@ -91,7 +91,7 @@ The tfschema requires the provider's dependency library version to:
 - zclconf/go-cty >= 14e23b14828dd12cc7ae0956813c7e91a196e68f (2018/01/06)
 
 # Rules of finding provider's binary
-When `terraform init` command is executed, provider's binary is installed under the auto installed directory ( .terraform/plugins/`<SOURCE ADDRESS>`/`<VERSION>`/`<OS>_<ARCH>` ) by default.
+When `terraform init` command is executed, provider's binary is installed under the auto installed directory ( .terraform/providers/`<SOURCE ADDRESS>`/`<VERSION>`/`<OS>_<ARCH>` ) by default.
 The tfschema can use the same provider's binary as terraform uses, so you can run `tfschema` command in the same directory where you run the `terraform` command
 Alternatively, you can set the environment variable `$TFSCHEMA_ROOT_DIR` to be this directory. If `$TFSCHEMA_ROOT_DIR` is not set, it will default to the current directory
 
@@ -100,11 +100,12 @@ The tfschema finds provider's binary under the following directories.
 1. `$TFSCHEMA_ROOT_DIR`
 2. same directory as `tfschema` executable
 3. user vendor directory ( `$TFSCHEMA_ROOT_DIR`/terraform.d/plugins/`<OS>_<ARCH>` )
-4. auto installed directory ( `$TFSCHEMA_ROOT_DIR`/.terraform/plugins/`<SOURCE ADDRESS>`/`<VERSION>`/`<OS>_<ARCH>` )
-5. legacy auto installed directory ( `$TFSCHEMA_ROOT_DIR`/.terraform/plugins/`<OS>_<ARCH>` )
-6. global plugin directory ( $HOME/.terraform.d/plugins )
-7. global plugin directory with os and arch ( $HOME/.terraform.d/plugins/`<OS>_<ARCH>` )
-8. gopath ( $GOPATH/bin )
+4. auto installed directory for Terraform v0.14+ ( `$TFSCHEMA_ROOT_DIR`/.terraform/providers/`<SOURCE ADDRESS>`/`<VERSION>`/`<OS>_<ARCH>` )
+5. auto installed directory for Terraform v0.13 ( `$TFSCHEMA_ROOT_DIR`/.terraform/plugins/`<SOURCE ADDRESS>`/`<VERSION>`/`<OS>_<ARCH>` )
+6. legacy auto installed directory for Terraform < v0.13 ( `$TFSCHEMA_ROOT_DIR`/.terraform/plugins/`<OS>_<ARCH>` )
+7. global plugin directory ( $HOME/.terraform.d/plugins )
+8. global plugin directory with os and arch ( $HOME/.terraform.d/plugins/`<OS>_<ARCH>` )
+9. gopath ( $GOPATH/bin )
 
 If you are Mac OSX user, `<OS>_<ARCH>` is `darwin_amd64`.
 The `<SOURCE ADDRESS>` is a fully qualified provider name in Terraform 0.13+. (e.g. `registry.terraform.io/hashicorp/aws`)

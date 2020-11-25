@@ -107,17 +107,33 @@ func pluginDirs(rootDir string) ([]string, error) {
 	}
 	dirs = append(dirs, filepath.Dir(exePath))
 
-	// user vendor directory for Terraform < v0.13.
-	// For Terraform v0.13, it is still supported but considered as legacy
-	// because now we can download third-party providers from Terraform Registry.
+	// user vendor directory, which is part of an implied local mirror.
 	arch := runtime.GOOS + "_" + runtime.GOARCH
 	vendorDir := filepath.Join(rootDir, "terraform.d", "plugins", arch)
 	dirs = append(dirs, vendorDir)
 
-	// auto installed directory for Terraform v0.13+
+	// auto installed directory for Terraform v0.14+
+	// The path contains a fully qualified provider name and version.
+	// .terraform/providers/registry.terraform.io/hashicorp/aws/3.17.0/darwin_amd64
+	// So we peek a lock file (.terraform.lock.hcl) and build a
+	// path of plugin directories.
+	// We don't check the `plugin_cache_dir` setting in the Terraform CLI
+	// configuration or the TF_PLUGIN_CACHE_DIR environmental variable here,
+	// https://github.com/hashicorp/terraform/blob/v0.14.0-rc1/website/docs/commands/cli-config.html.markdown#provider-plugin-cache
+	// but even if it is configured, the lock file is stored under
+	// the root directory and provider binaries are symlinked to the
+	// cache directory when running terraform init.
+	autoInstalledDirsV014, err := newLockFile(filepath.Join(rootDir, ".terraform.lock.hcl")).pluginDirs()
+	if err != nil {
+		return []string{}, err
+	}
+
+	dirs = append(dirs, autoInstalledDirsV014...)
+
+	// auto installed directory for Terraform v0.13
 	// The path contains a fully qualified provider name and version.
 	// .terraform/plugins/registry.terraform.io/hashicorp/aws/2.67.0/darwin_amd64
-	// So we peek a lock file (.terraform/plugins/selections.json) and build a
+	// So we peek a selection file (.terraform/plugins/selections.json) and build a
 	// path of plugin directories.
 	// We don't check the `plugin_cache_dir` setting in the Terraform CLI
 	// configuration or the TF_PLUGIN_CACHE_DIR environmental variable here,
@@ -125,12 +141,12 @@ func pluginDirs(rootDir string) ([]string, error) {
 	// but even if it is configured, the selection file is stored under
 	// .terraform/plugins directory and provider binaries are symlinked to the
 	// cache directory when running terraform init.
-	autoInstalledDirs, err := newSelectionFile(filepath.Join(rootDir, ".terraform", "plugins", "selections.json")).pluginDirs()
+	autoInstalledDirsV013, err := newSelectionFile(filepath.Join(rootDir, ".terraform", "plugins", "selections.json")).pluginDirs()
 	if err != nil {
 		return []string{}, err
 	}
 
-	dirs = append(dirs, autoInstalledDirs...)
+	dirs = append(dirs, autoInstalledDirsV013...)
 
 	// auto installed directory for Terraform < v0.13
 	legacyAutoInstalledDir := filepath.Join(rootDir, ".terraform", "plugins", arch)

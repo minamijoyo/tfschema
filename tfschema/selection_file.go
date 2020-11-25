@@ -10,7 +10,7 @@ import (
 	"runtime"
 )
 
-// selectionFile represents a lock file in Terraform v0.13+.
+// selectionFile represents a lock file in Terraform v0.13.
 // An example is as follows:
 // ```.terraform/plugins/selections.json
 // {
