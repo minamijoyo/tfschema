@@ -1,3 +1,9 @@
+## 0.6.0 (2020/12/04)
+
+ENHANCEMENTS:
+
+* Support Terraform v0.14 ([#29](https://github.com/minamijoyo/tfschema/pull/29))
+
 ## 0.5.0 (2020/09/09)
 
 INCOMPATIBILITIES AND NOTES:
