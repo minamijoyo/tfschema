@@ -11,7 +11,7 @@ A schema inspector for Terraform providers.
 - List available resource types.
 - Autocomplete resource types in bash/zsh.
 - Open official provider documents quickly by your system web browser.
-- Terraform v0.14 support (minimum requirements: Terraform >= v0.12 (protocol v5))
+- Terraform v0.15 support (minimum requirements: Terraform >= v0.12)
 
 ![demo](/images/tfschema-demo.gif)
 
