@@ -11,7 +11,7 @@ A schema inspector for Terraform providers.
 - List available resource types.
 - Autocomplete resource types in bash/zsh.
 - Open official provider documents quickly by your system web browser.
-- Terraform v0.14 support (minimum requirements: Terraform >= v0.11)
+- Terraform v0.14 support (minimum requirements: Terraform >= v0.12 (protocol v5))
 
 ![demo](/images/tfschema-demo.gif)
 
@@ -73,22 +73,6 @@ or
 Download the latest compiled binaries and put it anywhere in your executable path.
 
 https://github.com/minamijoyo/tfschema/releases
-
-# Requirements for Terraform providers
-
-- terraform-provider-aws >= v1.11.0
-- terraform-provider-google >= v1.5.0
-- terraform-provider-azurerm >= v1.3.0
-
-## Other providers
-Your provider may or may not support a required API.
-If your provider support Terraform >= v0.11, it should work.
-Strictly speaking, the tfschema depends on the Terraform's GetSchema API.
-
-The tfschema requires the provider's dependency library version to:
-
-- hashicorp/terraform >= v0.10.8
-- zclconf/go-cty >= 14e23b14828dd12cc7ae0956813c7e91a196e68f (2018/01/06)
 
 # Rules of finding provider's binary
 When `terraform init` command is executed, provider's binary is installed under the auto installed directory ( .terraform/providers/`<SOURCE ADDRESS>`/`<VERSION>`/`<OS>_<ARCH>` ) by default.
