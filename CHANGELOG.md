@@ -1,3 +1,9 @@
+## master (Unreleased)
+
+BREAKING CHANGES:
+
+* Drop Terraform v0.11 support ([#30](https://github.com/minamijoyo/tfschema/pull/30))
+
 ## 0.6.0 (2020/12/04)
 
 ENHANCEMENTS:
