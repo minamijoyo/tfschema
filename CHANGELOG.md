@@ -1,8 +1,14 @@
 ## master (Unreleased)
 
+## 0.7.0 (2021/04/26)
+
 BREAKING CHANGES:
 
 * Drop Terraform v0.11 support ([#30](https://github.com/minamijoyo/tfschema/pull/30))
+
+ENHANCEMENTS:
+
+* Support Terraform v0.15 ([#31](https://github.com/minamijoyo/tfschema/pull/31))
 
 ## 0.6.0 (2020/12/04)
 
