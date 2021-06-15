@@ -18,11 +18,11 @@ import (
 // Version is a version number.
 var version = "0.7.0"
 
-// UI is a user interface which is a global variable for mocking.
-var UI cli.Ui
+// ui is a user interface which is a global variable for mocking.
+var ui cli.Ui
 
 func init() {
-	UI = &cli.BasicUi{
+	ui = &cli.BasicUi{
 		Writer: os.Stdout,
 	}
 }
@@ -60,7 +60,7 @@ func wrappedMain() int {
 	log.SetOutput(logOutput())
 	log.Printf("[INFO] CLI args: %#v", os.Args)
 
-	commands := initCommands()
+	commands := command.InitCommands(ui)
 
 	args := os.Args[1:]
 
@@ -77,14 +77,14 @@ func wrappedMain() int {
 
 	exitStatus, err := c.Run()
 	if err != nil {
-		UI.Error(fmt.Sprintf("Failed to execute CLI: %s", err))
+		ui.Error(fmt.Sprintf("Failed to execute CLI: %s", err))
 	}
 
 	return exitStatus
 }
 
 func panicHandler(output string) {
-	UI.Error(fmt.Sprintf("The child panicked:\n\n%s\n", output))
+	ui.Error(fmt.Sprintf("The child panicked:\n\n%s\n", output))
 	os.Exit(1)
 }
 
@@ -118,55 +118,4 @@ func copyOutput(r io.Reader, doneCh chan<- struct{}) {
 	}()
 
 	wg.Wait()
-}
-
-func initCommands() map[string]cli.CommandFactory {
-	meta := command.Meta{
-		UI: UI,
-	}
-
-	commands := map[string]cli.CommandFactory{
-		"provider show": func() (cli.Command, error) {
-			return &command.ProviderShowCommand{
-				Meta: meta,
-			}, nil
-		},
-		"provider browse": func() (cli.Command, error) {
-			return &command.ProviderBrowseCommand{
-				Meta: meta,
-			}, nil
-		},
-		"resource list": func() (cli.Command, error) {
-			return &command.ResourceListCommand{
-				Meta: meta,
-			}, nil
-		},
-		"resource show": func() (cli.Command, error) {
-			return &command.ResourceShowCommand{
-				Meta: meta,
-			}, nil
-		},
-		"resource browse": func() (cli.Command, error) {
-			return &command.ResourceBrowseCommand{
-				Meta: meta,
-			}, nil
-		},
-		"data list": func() (cli.Command, error) {
-			return &command.DataListCommand{
-				Meta: meta,
-			}, nil
-		},
-		"data show": func() (cli.Command, error) {
-			return &command.DataShowCommand{
-				Meta: meta,
-			}, nil
-		},
-		"data browse": func() (cli.Command, error) {
-			return &command.DataBrowseCommand{
-				Meta: meta,
-			}, nil
-		},
-	}
-
-	return commands
 }
