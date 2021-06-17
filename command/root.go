@@ -2,6 +2,7 @@ package command
 
 import "github.com/mitchellh/cli"
 
+// InitCommands builds a root of commands.
 func InitCommands(ui cli.Ui) map[string]cli.CommandFactory {
 	meta := Meta{
 		UI: ui,
