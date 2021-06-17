@@ -1,5 +1,9 @@
 ## master (Unreleased)
 
+ENHANCEMENTS:
+
+* Add acceptance tests ([#33](https://github.com/minamijoyo/tfschema/pull/33))
+
 ## 0.7.0 (2021/04/26)
 
 BREAKING CHANGES:
