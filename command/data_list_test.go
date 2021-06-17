@@ -19,19 +19,24 @@ func TestAccDataList(t *testing.T) {
 	}{
 		{
 			desc:       "simple",
-			name:       "hashicups",
-			version:    "0.3.1",
-			args:       []string{"data", "list", "hashicups"},
+			name:       "dns",
+			version:    "3.2.0",
+			args:       []string{"data", "list", "dns"},
 			exitStatus: 0,
-			stdout: `hashicups_coffees
-hashicups_ingredients
-hashicups_order
+			stdout: `dns_a_record_set
+dns_aaaa_record_set
+dns_cname_record_set
+dns_mx_record_set
+dns_ns_record_set
+dns_ptr_record_set
+dns_srv_record_set
+dns_txt_record_set
 `,
 		},
 		{
 			desc:       "not found",
-			name:       "hashicups",
-			version:    "0.3.1",
+			name:       "dns",
+			version:    "3.2.0",
 			args:       []string{"data", "list", "foo"},
 			exitStatus: 1,
 			stdout:     "",
