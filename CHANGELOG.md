@@ -3,6 +3,8 @@
 ENHANCEMENTS:
 
 * Add acceptance tests ([#33](https://github.com/minamijoyo/tfschema/pull/33))
+* Restrict permissions for GitHub Actions ([#35](https://github.com/minamijoyo/tfschema/pull/35))
+* Set timeout for GitHub Actions ([#36](https://github.com/minamijoyo/tfschema/pull/36))
 
 ## 0.7.0 (2021/04/26)
 
