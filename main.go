@@ -16,7 +16,7 @@ import (
 )
 
 // Version is a version number.
-var version = "0.7.1"
+var version = "0.7.2"
 
 // ui is a user interface which is a global variable for mocking.
 var ui cli.Ui

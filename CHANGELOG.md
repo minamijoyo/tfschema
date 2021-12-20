@@ -1,5 +1,7 @@
 ## master (Unreleased)
 
+## 0.7.2 (2021/12/20)
+
 BUG FIXES:
 
 * Fixed broken links from 'tfschema resource browse <resource>' ([#38](https://github.com/minamijoyo/tfschema/pull/38))
