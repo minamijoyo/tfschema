@@ -4,7 +4,7 @@
 
 BUG FIXES:
 
-* Fixed broken links from 'tfschema resource browse <resource>' ([#38](https://github.com/minamijoyo/tfschema/pull/38))
+* Fixed broken links from 'tfschema resource browse \<resource\>' ([#38](https://github.com/minamijoyo/tfschema/pull/38))
 
 ## 0.7.1 (2021/10/28)
 
