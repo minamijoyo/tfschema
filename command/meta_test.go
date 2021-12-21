@@ -51,7 +51,7 @@ func TestBuildProviderDocURL(t *testing.T) {
 		{
 			desc: "simple",
 			name: "aws",
-			want: "https://registry.terraform.io/providers/hashicorp/aws/latest/docs",
+			want: "https://www.terraform.io/docs/providers/aws/index.html",
 			ok:   true,
 		},
 	}
@@ -84,7 +84,7 @@ func TestBuildResourceDocURL(t *testing.T) {
 		{
 			desc: "simple",
 			name: "aws_security_group",
-			want: "https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/security_group",
+			want: "https://www.terraform.io/docs/providers/aws/r/security_group",
 			ok:   true,
 		},
 		{
@@ -123,7 +123,7 @@ func TestBuildDataDocURL(t *testing.T) {
 		{
 			desc: "simple",
 			name: "aws_security_group",
-			want: "https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/security_group",
+			want: "https://www.terraform.io/docs/providers/aws/d/security_group",
 			ok:   true,
 		},
 		{
