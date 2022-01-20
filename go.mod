@@ -16,7 +16,6 @@ require (
 	github.com/pkg/browser v0.0.0-20201207095918-0426ae3fba23
 	github.com/posener/complete v1.2.1
 	github.com/zclconf/go-cty v1.8.1
-	golang.org/x/lint v0.0.0-20200302205851-738671d3881b
 )
 
 replace (

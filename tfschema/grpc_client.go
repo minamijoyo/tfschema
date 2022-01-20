@@ -74,7 +74,7 @@ func newGRPCClientConfig(pluginMeta *discovery.PluginMeta, options Option) *plug
 		Logger:           options.Logger,
 		AllowedProtocols: []plugin.Protocol{plugin.ProtocolGRPC},
 		Managed:          true,
-		Cmd:              exec.Command(pluginMeta.Path),
+		Cmd:              exec.Command(pluginMeta.Path), // nolint: gosec
 		AutoMTLS:         true,
 		VersionedPlugins: tfplugin.VersionedPlugins,
 	}

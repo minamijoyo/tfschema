@@ -13,7 +13,7 @@ on:
 jobs:
   test:
     runs-on: ${{ matrix.os }}
-    timeout-minutes: 5
+    timeout-minutes: 10
     strategy:
       matrix:
         os:
@@ -31,9 +31,10 @@ jobs:
         restore-keys: |
           ${{ runner.os }}-go-
     - name: test
-      run: make check
+      run: make test
   testacc:
     runs-on: ubuntu-latest
+    timeout-minutes: 10
     strategy:
       matrix:
         terraform:
