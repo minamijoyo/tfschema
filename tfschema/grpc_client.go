@@ -74,7 +74,11 @@ func newGRPCClientConfig(pluginMeta *discovery.PluginMeta, options Option) *plug
 		Logger:           options.Logger,
 		AllowedProtocols: []plugin.Protocol{plugin.ProtocolGRPC},
 		Managed:          true,
-		Cmd:              exec.Command(pluginMeta.Path), // nolint: gosec
+		// nolint: gosec
+		// G204: Subprocess launched with a potential tainted input or cmd arguments.
+		// The path of executable was found in plugin directories,
+		// which means it has a valid terraform plugin name.
+		Cmd:              exec.Command(pluginMeta.Path),
 		AutoMTLS:         true,
 		VersionedPlugins: tfplugin.VersionedPlugins,
 	}
