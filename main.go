@@ -114,7 +114,7 @@ func copyOutput(r io.Reader, doneCh chan<- struct{}) {
 	wg.Add(1)
 	go func() {
 		defer wg.Done()
-		io.Copy(os.Stdout, r)
+		io.Copy(os.Stdout, r) // nolint: errcheck
 	}()
 
 	wg.Wait()

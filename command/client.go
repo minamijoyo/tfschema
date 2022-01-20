@@ -1,8 +1,9 @@
 package command
 
 import (
-	"github.com/minamijoyo/tfschema/tfschema"
 	"os"
+
+	"github.com/minamijoyo/tfschema/tfschema"
 )
 
 // NewDefaultClient creates a new Client instance.
@@ -16,4 +17,3 @@ func NewDefaultClient(providerName string) (tfschema.Client, error) {
 
 	return tfschema.NewClient(providerName, options)
 }
-
