@@ -46,10 +46,14 @@ func setupTestAcc(t *testing.T, providerName string, providerVersion string) {
 	if err != nil {
 		t.Fatalf("failed to get current dir: %s", err)
 	}
-	os.Chdir(workDir) // nolint: errcheck
+	if err := os.Chdir(workDir); err != nil {
+		t.Fatalf("failed to change dir to %s on setup: %s", workDir, err)
+	}
 
 	t.Cleanup(func() {
-		os.Chdir(oldDir) // nolint: errcheck
+		if err := os.Chdir(oldDir); err != nil {
+			t.Fatalf("failed to change dir to %s on cleanup: %s", oldDir, err)
+		}
 		os.RemoveAll(workDir)
 	})
 
@@ -73,7 +77,7 @@ func setupTestWorkDir(source string) (string, error) {
 		return "", fmt.Errorf("failed to create work dir: %s", err)
 	}
 
-	if err := os.WriteFile(filepath.Join(workDir, "main.tf"), []byte(source), 0644); err != nil { // nolint: gosec
+	if err := os.WriteFile(filepath.Join(workDir, "main.tf"), []byte(source), 0600); err != nil {
 		os.RemoveAll(workDir)
 		return "", fmt.Errorf("failed to create main.tf: %s", err)
 	}
