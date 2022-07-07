@@ -5,6 +5,8 @@ ENHANCEMENTS:
 * Use golangci-lint instead of golint ([#40](https://github.com/minamijoyo/tfschema/pull/40))
 * Fix lint errors ([#41](https://github.com/minamijoyo/tfschema/pull/41))
 * Update golangci-lint to v1.45.2 and actions to latest ([#42](https://github.com/minamijoyo/tfschema/pull/42))
+* Update Go to v1.17.11 and Alpine to v3.16 ([#44](https://github.com/minamijoyo/tfschema/pull/44))
+* Add arm64 builds to support M1 mac ([#45](https://github.com/minamijoyo/tfschema/pull/45))
 
 ## 0.7.2 (2021/12/20)
 
