@@ -1,5 +1,7 @@
 ## master (Unreleased)
 
+## 0.7.3 (2022/07/08)
+
 ENHANCEMENTS:
 
 * Use golangci-lint instead of golint ([#40](https://github.com/minamijoyo/tfschema/pull/40))
