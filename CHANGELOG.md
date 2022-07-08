@@ -1,5 +1,11 @@
 ## master (Unreleased)
 
+## 0.7.4 (2022/07/08)
+
+BUG FIXES:
+
+* Fix build for windows_arm64 ([#46](https://github.com/minamijoyo/tfschema/pull/46))
+
 ## 0.7.3 (2022/07/08)
 
 ENHANCEMENTS:
