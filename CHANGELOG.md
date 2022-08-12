@@ -1,5 +1,7 @@
 ## master (Unreleased)
 
+## 0.7.5 (2022/08/12)
+
 ENHANCEMENTS:
 
 * Use GitHub App token for updating brew formula on release ([#47](https://github.com/minamijoyo/tfschema/pull/47))
