@@ -1,6 +1,6 @@
 module github.com/minamijoyo/tfschema
 
-go 1.17
+go 1.21
 
 require (
 	github.com/hashicorp/go-hclog v0.15.0
