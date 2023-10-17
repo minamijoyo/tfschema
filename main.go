@@ -3,7 +3,6 @@ package main
 import (
 	"fmt"
 	"io"
-	"io/ioutil"
 	"log"
 	"os"
 	"sync"
@@ -93,7 +92,7 @@ func logOutput() io.Writer {
 	minLevel := os.Getenv("TFSCHEMA_LOG")
 
 	// default log writer is null device.
-	writer := ioutil.Discard
+	writer := io.Discard
 	if minLevel != "" {
 		writer = os.Stderr
 	}

@@ -3,7 +3,6 @@ package tfschema
 import (
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
 	"log"
 	"os"
 	"path/filepath"
@@ -13,12 +12,14 @@ import (
 // selectionFile represents a lock file in Terraform v0.13.
 // An example is as follows:
 // ```.terraform/plugins/selections.json
-// {
-//   "registry.terraform.io/hashicorp/aws": {
-//     "hash": "h1:bVpVG796X94WeMxRcRNq+YmHVQkbaWYCsR906VwgJxE=",
-//     "version": "2.67.0"
-//   }
-// }
+//
+//	{
+//	  "registry.terraform.io/hashicorp/aws": {
+//	    "hash": "h1:bVpVG796X94WeMxRcRNq+YmHVQkbaWYCsR906VwgJxE=",
+//	    "version": "2.67.0"
+//	  }
+//	}
+//
 // ```
 //
 // It includes selected the fully qualified provider name and version.
@@ -43,7 +44,7 @@ func newSelectionFile(path string) *selectionFile {
 
 // pluginDirs peeks a selection file and returns a slice of plugin directories.
 func (f *selectionFile) pluginDirs() ([]string, error) {
-	buf, err := ioutil.ReadFile(f.path)
+	buf, err := os.ReadFile(f.path)
 
 	if err != nil {
 		if os.IsNotExist(err) {
