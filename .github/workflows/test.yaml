@@ -24,7 +24,6 @@ jobs:
     - uses: actions/setup-go@v4
       with:
         go-version-file: '.go-version'
-        cache: true
     - name: test
       run: make test
   testacc:
