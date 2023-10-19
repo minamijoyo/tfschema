@@ -58,10 +58,20 @@ func setupTestAcc(t *testing.T, providerName string, providerVersion string) {
 	})
 
 	// terraform init
-	cmd := exec.Command("terraform", "init")
+	terraformExecPath := ""
+	tfMode := os.Getenv("TFSCHEMA_TF_MODE")
+	switch tfMode {
+	case "terraform":
+		terraformExecPath = "terraform"
+	case "opentofu":
+		terraformExecPath = "tofu"
+	default:
+		t.Fatalf("unknown TFSCHEMA_TF_MODE: %s", tfMode)
+	}
+	cmd := exec.Command(terraformExecPath, "init")
 	cmd.Dir = workDir
 	if out, err := cmd.CombinedOutput(); err != nil {
-		t.Fatalf("failed to run terraform init: %s, out: %s", err, out)
+		t.Fatalf("failed to run %s init: %s, out: %s", terraformExecPath, err, out)
 	}
 
 	// check if the workDir was initizalied.

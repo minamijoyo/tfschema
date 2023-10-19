@@ -26,7 +26,7 @@ jobs:
         go-version-file: '.go-version'
     - name: test
       run: make test
-  testacc:
+  testacc_terraform:
     runs-on: ubuntu-latest
     timeout-minutes: 10
     strategy:
@@ -39,11 +39,31 @@ jobs:
         - 0.12.31
     env:
       TERRAFORM_VERSION: ${{ matrix.terraform }}
+      TFSCHEMA_TF_MODE: terraform
     steps:
     - uses: actions/checkout@v3
     - name: docker build
       run: docker-compose build
     - name: terraform --version
       run: docker-compose run --rm tfschema terraform --version
+    - name: testacc
+      run: docker-compose run --rm tfschema make testacc
+  testacc_opentofu:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    strategy:
+      matrix:
+        opentofu:
+        - 1.6.0-alpha3
+    env:
+      OPENTOFU_VERSION: ${{ matrix.opentofu }}
+      TFSCHEMA_TF_MODE: opentofu
+    steps:
+    - uses: actions/checkout@v3
+    - name: docker build
+      run: docker-compose build
+    - name: opentofu --version
+      run: |
+        docker-compose run --rm tfschema tofu --version
     - name: testacc
       run: docker-compose run --rm tfschema make testacc
