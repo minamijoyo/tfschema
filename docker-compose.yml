@@ -5,9 +5,11 @@ services:
       context: .
       args:
         TERRAFORM_VERSION: ${TERRAFORM_VERSION:-latest}
+        OPENTOFU_VERSION: ${OPENTOFU_VERSION:-latest}
     volumes:
       - ".:/work"
     environment:
+      TFSCHEMA_TF_MODE: ${TFSCHEMA_TF_MODE:-terraform}
       CGO_ENABLED: 0 # disable cgo for go test
       # Use the same filesystem to avoid a checksum mismatch error
       # or a file busy error caused by asynchronous IO.
