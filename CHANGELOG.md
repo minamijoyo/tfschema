@@ -1,5 +1,7 @@
 ## master (Unreleased)
 
+## 0.7.6 (2023/11/18)
+
 ENHANCEMENTS:
 
 * Fix the git permission issue ([#49](https://github.com/minamijoyo/tfschema/pull/49))
