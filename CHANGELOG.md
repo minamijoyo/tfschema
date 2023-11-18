@@ -4,6 +4,7 @@ ENHANCEMENTS:
 
 * Fix the git permission issue ([#49](https://github.com/minamijoyo/tfschema/pull/49))
 * Update Go to v1.21 ([#51](https://github.com/minamijoyo/tfschema/pull/51))
+* Add OpenTofu to test matrix ([#52](https://github.com/minamijoyo/tfschema/pull/52))
 
 ## 0.7.5 (2022/08/12)
 
