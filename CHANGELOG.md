@@ -1,5 +1,7 @@
 ## master (Unreleased)
 
+## 0.7.7 (2023/11/22)
+
 ENHANCEMENTS:
 
 * Disable CGO ([#54](https://github.com/minamijoyo/tfschema/pull/54))
