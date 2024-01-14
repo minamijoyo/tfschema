@@ -1,5 +1,11 @@
 ## master (Unreleased)
 
+ENHANCEMENTS:
+
+* Add support for OpenTofu v1.6 ([#55](https://github.com/minamijoyo/tfschema/pull/55))
+* Add support for Terraform v1.6 ([#56](https://github.com/minamijoyo/tfschema/pull/56))
+* Update actions/checkout to v4 ([#57](https://github.com/minamijoyo/tfschema/pull/57))
+
 ## 0.7.7 (2023/11/22)
 
 ENHANCEMENTS:
