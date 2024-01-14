@@ -1,5 +1,7 @@
 ## master (Unreleased)
 
+## 0.7.8 (2024/01/14)
+
 ENHANCEMENTS:
 
 * Add support for OpenTofu v1.6 ([#55](https://github.com/minamijoyo/tfschema/pull/55))
