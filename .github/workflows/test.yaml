@@ -20,7 +20,7 @@ jobs:
         - ubuntu-latest
         - macOS-latest
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v4
     - uses: actions/setup-go@v4
       with:
         go-version-file: '.go-version'
@@ -41,7 +41,7 @@ jobs:
       TERRAFORM_VERSION: ${{ matrix.terraform }}
       TFSCHEMA_TF_MODE: terraform
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v4
     - name: docker build
       run: docker-compose build
     - name: terraform --version
@@ -59,7 +59,7 @@ jobs:
       OPENTOFU_VERSION: ${{ matrix.opentofu }}
       TFSCHEMA_TF_MODE: opentofu
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v4
     - name: docker build
       run: docker-compose build
     - name: opentofu --version
