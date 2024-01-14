@@ -3,15 +3,16 @@
 [![GitHub release](https://img.shields.io/github/release/minamijoyo/tfschema.svg)](https://github.com/minamijoyo/tfschema/releases/latest)
 [![GoDoc](https://godoc.org/github.com/minamijoyo/tfschema/tfschema?status.svg)](https://godoc.org/github.com/minamijoyo/tfschema)
 
-A schema inspector for Terraform providers.
+A schema inspector for Terraform / OpenTofu providers.
 
 # Features
 
-- Get resource type definitions dynamically from Terraform providers via go-plugin protocol.
+- Get resource type definitions dynamically from Terraform / OpenTofu providers via go-plugin protocol.
 - List available resource types.
 - Autocomplete resource types in bash/zsh.
 - Open official provider documents quickly by your system web browser.
-- Terraform v0.15 support (minimum requirements: Terraform >= v0.12)
+- Terraform v0.15+ support (minimum requirements: Terraform >= v0.12)
+- OpenTofu v1.6+ support
 
 ![demo](/images/tfschema-demo.gif)
 
