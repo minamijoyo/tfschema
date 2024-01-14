@@ -27,7 +27,7 @@ brews:
       name: "Masayuki Morita"
       email: minamijoyo@gmail.com
     homepage: https://github.com/minamijoyo/tfschema
-    description: "A schema inspector for Terraform providers."
+    description: "A schema inspector for Terraform / OpenTofu providers."
     skip_upload: auto
     test: |
       system "#{bin}/tfschema --version"
