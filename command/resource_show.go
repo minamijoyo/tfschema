@@ -10,13 +10,15 @@ import (
 // ResourceShowCommand is a command which shows a type definition of resource.
 type ResourceShowCommand struct {
 	Meta
-	format string
+	format       string
+	providerName string
 }
 
 // Run runs the procedure of this command.
 func (c *ResourceShowCommand) Run(args []string) int {
 	cmdFlags := flag.NewFlagSet("resource show", flag.ContinueOnError)
 	cmdFlags.StringVar(&c.format, "format", "table", "")
+	cmdFlags.StringVar(&c.providerName, "provider", "", "")
 
 	if err := cmdFlags.Parse(args); err != nil {
 		return 1
@@ -29,12 +31,15 @@ func (c *ResourceShowCommand) Run(args []string) int {
 	}
 
 	resourceType := cmdFlags.Args()[0]
-	providerName, err := detectProviderName(resourceType)
-	if err != nil {
-		c.UI.Error(err.Error())
-		return 1
+	providerName := c.providerName
+	if len(providerName) == 0 {
+		var err error
+		providerName, err = detectProviderName(resourceType)
+		if err != nil {
+			c.UI.Error(err.Error())
+			return 1
+		}
 	}
-
 	client, err := NewDefaultClient(providerName)
 	if err != nil {
 		c.UI.Error(err.Error())
@@ -79,6 +84,7 @@ Usage: tfschema resource show [options] RESOURCE_TYPE
 Options:
 
   -format=type    Set output format to table or json (default: table)
+  -provider=name  Manual provider name (otherwise derived from resource name first underscore prefix)
 `
 	return strings.TrimSpace(helpText)
 }
