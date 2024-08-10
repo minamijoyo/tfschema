@@ -43,11 +43,11 @@ jobs:
     steps:
     - uses: actions/checkout@v4
     - name: docker build
-      run: docker-compose build
+      run: docker compose build
     - name: terraform --version
-      run: docker-compose run --rm tfschema terraform --version
+      run: docker compose run --rm tfschema terraform --version
     - name: testacc
-      run: docker-compose run --rm tfschema make testacc
+      run: docker compose run --rm tfschema make testacc
   testacc_opentofu:
     runs-on: ubuntu-latest
     timeout-minutes: 10
@@ -61,9 +61,9 @@ jobs:
     steps:
     - uses: actions/checkout@v4
     - name: docker build
-      run: docker-compose build
+      run: docker compose build
     - name: opentofu --version
       run: |
-        docker-compose run --rm tfschema tofu --version
+        docker compose run --rm tfschema tofu --version
     - name: testacc
-      run: docker-compose run --rm tfschema make testacc
+      run: docker compose run --rm tfschema make testacc
