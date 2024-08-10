@@ -52,7 +52,9 @@ jobs:
     strategy:
       matrix:
         opentofu:
-        - 1.6.0
+        - 1.8.0
+        - 1.7.3
+        - 1.6.3
     env:
       OPENTOFU_VERSION: ${{ matrix.opentofu }}
       TFSCHEMA_TF_MODE: opentofu
