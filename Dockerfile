@@ -4,7 +4,7 @@ ARG OPENTOFU_VERSION=latest
 FROM hashicorp/terraform:$TERRAFORM_VERSION AS terraform
 FROM ghcr.io/opentofu/opentofu:$OPENTOFU_VERSION AS opentofu
 
-FROM golang:1.22-alpine3.19
+FROM golang:1.22-alpine3.20
 RUN apk --no-cache add make git bash
 
 # A workaround for a permission issue of git.
