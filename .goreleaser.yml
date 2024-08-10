@@ -1,3 +1,4 @@
+version: 2
 builds:
   - binary: tfschema
     goos:
@@ -19,7 +20,7 @@ changelog:
       - Update README
       - Update CHANGELOG
 brews:
-  - tap:
+  - repository:
       owner: minamijoyo
       name: homebrew-tfschema
       token: "{{ .Env.HOMEBREW_TAP_GITHUB_TOKEN }}"
