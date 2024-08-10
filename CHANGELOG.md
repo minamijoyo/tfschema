@@ -1,5 +1,17 @@
 ## master (Unreleased)
 
+ENHANCEMENTS:
+
+* Update to use go 1.22 ([#58](https://github.com/minamijoyo/tfschema/pull/58))
+* Use docker compose command instead of docker-compose ([#59](https://github.com/minamijoyo/tfschema/pull/59))
+* Update alpine to v3.20 ([#60](https://github.com/minamijoyo/tfschema/pull/60))
+* Update golangci-lint to v1.59.1 ([#61](https://github.com/minamijoyo/tfschema/pull/61))
+* Update setup-go to v5 ([#62](https://github.com/minamijoyo/tfschema/pull/62))
+* Add support for Terraform 1.9 ([#63](https://github.com/minamijoyo/tfschema/pull/63))
+* Add support for OpenTofu 1.8 ([#64](https://github.com/minamijoyo/tfschema/pull/64))
+* Update goreleaser to v2 ([#65](https://github.com/minamijoyo/tfschema/pull/65))
+* Switch to the official action for creating GitHub App token ([#66](https://github.com/minamijoyo/tfschema/pull/66))
+
 ## 0.7.8 (2024/01/14)
 
 ENHANCEMENTS:
