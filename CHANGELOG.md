@@ -1,5 +1,7 @@
 ## master (Unreleased)
 
+## 0.7.9 (2024/08/10)
+
 ENHANCEMENTS:
 
 * Update to use go 1.22 ([#58](https://github.com/minamijoyo/tfschema/pull/58))
