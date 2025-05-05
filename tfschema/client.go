@@ -64,7 +64,7 @@ func findPlugin(pluginType string, pluginName string, rootDir string) (*discover
 		return &ret, nil
 	}
 
-	return nil, fmt.Errorf("Failed to find plugin: %s. Plugin binary was not found in any of the following directories: [%s]", pluginName, strings.Join(dirs, ", "))
+	return nil, fmt.Errorf("Failed to find plugin: %s. Plugin binary was not found in any of the following directories: [%s] (in some cases you might need to specify -provider=<name>, e.g. provider name google-beta for google_* resources)", pluginName, strings.Join(dirs, ", "))
 }
 
 // pluginDirs returns a list of directories to find plugin.
