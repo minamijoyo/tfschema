@@ -61,7 +61,7 @@ $ brew install minamijoyo/tfschema/tfschema
 
 or
 
-If you have Go 1.17+ development environment:
+If you have Go 1.26+ development environment:
 
 ```bash
 $ git clone https://github.com/minamijoyo/tfschema

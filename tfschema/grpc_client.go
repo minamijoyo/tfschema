@@ -13,7 +13,7 @@ import (
 )
 
 // GRPCClient implements Client interface.
-// This implementaion is for Terraform v0.12+.
+// This implementation is for Terraform v0.12+.
 type GRPCClient struct {
 	// provider is a provider interface of Terraform.
 	provider providers.Interface
@@ -34,13 +34,13 @@ func NewGRPCClient(providerName string, options Option) (Client, error) {
 	client := plugin.NewClient(config)
 	rpcClient, err := client.Client()
 	if err != nil {
-		return nil, fmt.Errorf("Failed to initialize GRPC plugin: %s", err)
+		return nil, fmt.Errorf("failed to initialize GRPC plugin: %s", err)
 	}
 
 	// create a new GRPCProvider.
 	raw, err := rpcClient.Dispense(tfplugin.ProviderPluginName)
 	if err != nil {
-		return nil, fmt.Errorf("Failed to dispense GRPC plugin: %s", err)
+		return nil, fmt.Errorf("failed to dispense GRPC plugin: %s", err)
 	}
 
 	// To clean up the plugin process, we need to explicitly store references.
@@ -88,13 +88,13 @@ func newGRPCClientConfig(pluginMeta *discovery.PluginMeta, options Option) *plug
 func (c *GRPCClient) getSchema() (providers.GetProviderSchemaResponse, error) {
 	res := c.provider.GetProviderSchema()
 	if res.Diagnostics.HasErrors() {
-		return res, fmt.Errorf("Failed to get schema from provider: %s", res.Diagnostics.Err())
+		return res, fmt.Errorf("failed to get schema from provider: %s", res.Diagnostics.Err())
 	}
 
 	return res, nil
 }
 
-// GetProviderSchema returns a type definiton of provider schema.
+// GetProviderSchema returns a type definition of provider schema.
 func (c *GRPCClient) GetProviderSchema() (*Block, error) {
 	res, err := c.getSchema()
 	if err != nil {
@@ -105,7 +105,7 @@ func (c *GRPCClient) GetProviderSchema() (*Block, error) {
 	return b, nil
 }
 
-// GetResourceTypeSchema returns a type definiton of resource type.
+// GetResourceTypeSchema returns a type definition of resource type.
 func (c *GRPCClient) GetResourceTypeSchema(resourceType string) (*Block, error) {
 	res, err := c.getSchema()
 	if err != nil {
@@ -114,14 +114,14 @@ func (c *GRPCClient) GetResourceTypeSchema(resourceType string) (*Block, error) 
 
 	schema, ok := res.ResourceTypes[resourceType]
 	if !ok {
-		return nil, fmt.Errorf("Failed to find resource type: %s", resourceType)
+		return nil, fmt.Errorf("failed to find resource type: %s", resourceType)
 	}
 
 	b := NewBlock(schema.Block)
 	return b, nil
 }
 
-// GetDataSourceSchema returns a type definiton of data source.
+// GetDataSourceSchema returns a type definition of data source.
 func (c *GRPCClient) GetDataSourceSchema(dataSource string) (*Block, error) {
 	res, err := c.getSchema()
 	if err != nil {
@@ -130,7 +130,7 @@ func (c *GRPCClient) GetDataSourceSchema(dataSource string) (*Block, error) {
 
 	schema, ok := res.DataSources[dataSource]
 	if !ok {
-		return nil, fmt.Errorf("Failed to find data source: %s", dataSource)
+		return nil, fmt.Errorf("failed to find data source: %s", dataSource)
 	}
 
 	b := NewBlock(schema.Block)

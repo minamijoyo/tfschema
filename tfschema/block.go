@@ -6,7 +6,7 @@ import (
 
 // Block is wrapper for configschema.Block.
 // This ia a layer for customization not enough for Terraform's core.
-// Most of the structure is the smae as the core, but some are different.
+// Most of the structure is the same as the core, but some are different.
 type Block struct {
 	// Attributes is a map of any attributes.
 	Attributes map[string]*Attribute `json:"attributes"`

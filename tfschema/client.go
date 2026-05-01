@@ -18,13 +18,13 @@ import (
 // schema from Terraform providers.
 // This is a compatibility layer for supporting multiple Terraform versions.
 type Client interface {
-	// GetProviderSchema returns a type definiton of provider schema.
+	// GetProviderSchema returns a type definition of provider schema.
 	GetProviderSchema() (*Block, error)
 
-	// GetResourceTypeSchema returns a type definiton of resource type.
+	// GetResourceTypeSchema returns a type definition of resource type.
 	GetResourceTypeSchema(resourceType string) (*Block, error)
 
-	// GetDataSourceSchema returns a type definiton of data source.
+	// GetDataSourceSchema returns a type definition of data source.
 	GetDataSourceSchema(dataSource string) (*Block, error)
 
 	// ResourceTypes returns a list of resource types.
@@ -64,7 +64,7 @@ func findPlugin(pluginType string, pluginName string, rootDir string) (*discover
 		return &ret, nil
 	}
 
-	return nil, fmt.Errorf("Failed to find plugin: %s. Plugin binary was not found in any of the following directories: [%s]", pluginName, strings.Join(dirs, ", "))
+	return nil, fmt.Errorf("failed to find plugin: %s. Plugin binary was not found in any of the following directories: [%s]", pluginName, strings.Join(dirs, ", "))
 }
 
 // pluginDirs returns a list of directories to find plugin.
@@ -84,7 +84,7 @@ func pluginDirs(rootDir string) ([]string, error) {
 	// same directory as this executable (not terraform)
 	exePath, err := os.Executable()
 	if err != nil {
-		return []string{}, fmt.Errorf("Failed to get executable path: %s", err)
+		return []string{}, fmt.Errorf("failed to get executable path: %s", err)
 	}
 	dirs = append(dirs, filepath.Dir(exePath))
 
@@ -136,7 +136,7 @@ func pluginDirs(rootDir string) ([]string, error) {
 	// global plugin directory
 	homeDir, err := homedir.Dir()
 	if err != nil {
-		return []string{}, fmt.Errorf("Failed to get home dir: %s", err)
+		return []string{}, fmt.Errorf("failed to get home dir: %s", err)
 	}
 	configDir := filepath.Join(homeDir, ".terraform.d", "plugins")
 	dirs = append(dirs, configDir)
