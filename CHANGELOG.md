@@ -1,5 +1,15 @@
 ## master (Unreleased)
 
+ENHANCEMENTS:
+
+* Pin all GitHub Actions ([#67](https://github.com/minamijoyo/tfschema/pull/67))
+* Add support for Terraform v1.15 ([#68](https://github.com/minamijoyo/tfschema/pull/68))
+* Add support for OpenTofu v1.11 ([#69](https://github.com/minamijoyo/tfschema/pull/69))
+* Update Go to v1.26 ([#70](https://github.com/minamijoyo/tfschema/pull/70))
+* Update actions/checkout to v6 ([#71](https://github.com/minamijoyo/tfschema/pull/71))
+* Update create-github-app-token to v3 ([#72](https://github.com/minamijoyo/tfschema/pull/72))
+* Update goreleaser-action to v7 ([#73](https://github.com/minamijoyo/tfschema/pull/73))
+
 ## 0.7.9 (2024/08/10)
 
 ENHANCEMENTS:
