@@ -87,11 +87,11 @@ func renderAttributes(b *Block) (string, error) {
 // If a type name contains object type, its length may be long and it is hard to read.
 // Add a space to the type name so that tablewriter can break it into lines.
 func formatTypeName(name string) string {
-	return strings.Replace(
-		strings.Replace(
-			strings.Replace(name, ",", ", ", -1),
-			"{", "{ ", -1),
-		"}", " }", -1)
+	return strings.ReplaceAll(
+		strings.ReplaceAll(
+			strings.ReplaceAll(name, ",", ", "),
+			"{", "{ "),
+		"}", " }")
 }
 
 // renderBlockTypes returns a formatted string in table format for BlockTypes.

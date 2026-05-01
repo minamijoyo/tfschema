@@ -24,7 +24,7 @@ func NewBlockFormatter(b *tfschema.Block, format string) (BlockFormatter, error)
 	case "json":
 		f = json.NewBlock(b)
 	default:
-		return nil, fmt.Errorf("Failed to new BlockFormatter. Unknown output format: %s", format)
+		return nil, fmt.Errorf("failed to new BlockFormatter. Unknown output format: %s", format)
 	}
 
 	return f, nil

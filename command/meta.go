@@ -21,7 +21,7 @@ type Meta struct {
 func detectProviderName(name string) (string, error) {
 	s := strings.SplitN(name, "_", 2)
 	if len(s) < 2 {
-		return "", fmt.Errorf("Failed to detect a provider name: %s", name)
+		return "", fmt.Errorf("failed to detect a provider name: %s", name)
 	}
 	return s[0], nil
 }
@@ -36,7 +36,7 @@ func buildProviderDocURL(providerName string) (string, error) {
 func buildResourceDocURL(resourceType string) (string, error) {
 	s := strings.SplitN(resourceType, "_", 2)
 	if len(s) < 2 {
-		return "", fmt.Errorf("Failed to build a resource doc URL: %s", resourceType)
+		return "", fmt.Errorf("failed to build a resource doc URL: %s", resourceType)
 	}
 
 	// build a doc URL like this
@@ -48,7 +48,7 @@ func buildResourceDocURL(resourceType string) (string, error) {
 func buildDataDocURL(dataSource string) (string, error) {
 	s := strings.SplitN(dataSource, "_", 2)
 	if len(s) < 2 {
-		return "", fmt.Errorf("Failed to build a data source doc URL: %s", dataSource)
+		return "", fmt.Errorf("failed to build a data source doc URL: %s", dataSource)
 	}
 
 	// build a doc URL like this

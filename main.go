@@ -57,6 +57,8 @@ func main() {
 
 func wrappedMain() int {
 	log.SetOutput(logOutput())
+
+	// #nosec G706: Log injection via taint analysis
 	log.Printf("[INFO] CLI args: %#v", os.Args)
 
 	commands := command.InitCommands(ui)

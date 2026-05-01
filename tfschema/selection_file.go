@@ -58,7 +58,7 @@ func (f *selectionFile) pluginDirs() ([]string, error) {
 	var entries map[string]selectionFileEntry
 	err = json.Unmarshal(buf, &entries)
 	if err != nil {
-		return nil, fmt.Errorf("Failed to parse selection file %s: %s", f.path, err)
+		return nil, fmt.Errorf("failed to parse selection file %s: %s", f.path, err)
 	}
 
 	dirs := []string{}
