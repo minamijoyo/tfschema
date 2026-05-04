@@ -1,5 +1,7 @@
 ## master (Unreleased)
 
+## 0.7.10 (2026/05/04)
+
 ENHANCEMENTS:
 
 * Pin all GitHub Actions ([#67](https://github.com/minamijoyo/tfschema/pull/67))
