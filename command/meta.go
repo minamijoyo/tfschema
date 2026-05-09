@@ -9,8 +9,7 @@ import (
 	"github.com/mitchellh/cli"
 )
 
-const docBaseURL = "https://registry.terraform.io/providers/hashicorp/"
-const latestDocs = "/latest/docs"
+const docBaseURL = "https://www.terraform.io/docs/providers/"
 
 // Meta are the meta-options that are available on all or most commands.
 type Meta struct {
@@ -28,8 +27,8 @@ func detectProviderName(name string) (string, error) {
 
 func buildProviderDocURL(providerName string) (string, error) {
 	// build a doc URL like this
-	// https://registry.terraform.io/providers/hashicorp/aws/latest/docs
-	url := docBaseURL + providerName + latestDocs
+	// https://www.terraform.io/docs/providers/aws/index.html
+	url := docBaseURL + providerName + "/index.html"
 	return url, nil
 }
 
@@ -40,8 +39,8 @@ func buildResourceDocURL(resourceType string) (string, error) {
 	}
 
 	// build a doc URL like this
-	// https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/security_group
-	url := docBaseURL + s[0] + latestDocs + "/resources/" + s[1]
+	// https://www.terraform.io/docs/providers/aws/r/security_group
+	url := docBaseURL + s[0] + "/r/" + s[1]
 	return url, nil
 }
 
@@ -52,8 +51,8 @@ func buildDataDocURL(dataSource string) (string, error) {
 	}
 
 	// build a doc URL like this
-	// https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/security_group
-	url := docBaseURL + s[0] + latestDocs + "/data-sources/" + s[1]
+	// https://www.terraform.io/docs/providers/aws/d/security_group
+	url := docBaseURL + s[0] + "/d/" + s[1]
 	return url, nil
 }
 
